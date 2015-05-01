@@ -1,0 +1,13 @@
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+build/
+.DS_store
+
+# Sphinx documentation
+docs/_build/
+
+.ipynb_checkpoints

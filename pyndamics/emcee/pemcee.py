@@ -222,7 +222,8 @@ class MCMCModel(object):
         self.initial_value=None
         self.last_pos=None
 
-        
+        self.verbose=True
+
     # Define the probability function as likelihood * prior.
     def lnprior(self,theta):        
         value=0.0
@@ -341,11 +342,15 @@ class MCMCModel(object):
             self.sampler = emcee.EnsembleSampler(self.nwalkers, ndim, 
                     lnprior_function(self))
 
-            timeit(reset=True)
-            print("Sampling Prior...")
+            if self.verbose:
+                timeit(reset=True)
+                print("Sampling Prior...")
+
             self.sampler.run_mcmc(pos, N,**kwargs)
-            print("Done.")
-            print timeit()
+
+            if self.verbose:
+                print("Done.")
+                print timeit()
 
             # assign the median back into the simulation values
             self.burn()
@@ -396,11 +401,15 @@ class MCMCModel(object):
         self.sampler = emcee.EnsembleSampler(self.nwalkers, ndim, self,)
         self.real_initial_value=self.last_pos.copy()
         
-        timeit(reset=True)
-        print("Running MCMC...")
+        if self.verbose:
+            timeit(reset=True)
+            print("Running MCMC...")
+
         self.sampler.run_mcmc(self.last_pos, N,**kwargs)
-        print("Done.")
-        print timeit()
+
+        if self.verbose:
+            print("Done.")
+            print timeit()
 
         
         # assign the median back into the simulation values

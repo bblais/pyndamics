@@ -500,6 +500,9 @@ class Simulation(object):
         for _f in self.myfunctions:
             s=s+"    %s=_sim.myfunctions['%s']\n" % (_f,_f)
         
+        for _i,_c in enumerate(_sim.components):
+            s=s+"    initial_%s=%s\n" % (_c.name,str(_c.initial_value))
+        s=s+"\n"
         
         for key in _sim.original_params:
             s=s+"    %s=_sim.original_params['%s']\n" % (key,key)
@@ -508,6 +511,8 @@ class Simulation(object):
         for _i,_c in enumerate(_sim.components):
             s=s+"    %s=_vec[%d]\n" % (_c.name,_i)
         s=s+"\n"
+
+
 
         if _sim.use_delays:
             for _i,_c in enumerate(_sim.components):
@@ -713,6 +718,7 @@ class Simulation(object):
             _l=locals()
             for _i,_c in enumerate(_sim.components):
                 _l[_c.name]=_c.values
+                _l["initial_"+_c.name]=_c.initial_value
 
             _l.update(_sim.myparams)
 

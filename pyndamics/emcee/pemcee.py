@@ -212,7 +212,8 @@ class MCMCModel(object):
                 
                 name=key.split('initial_')[1]
                 _c=sim.get_component(name)
-                self.initial_components[key]=_c                
+                self.initial_components[key]=_c
+
             else:
                 self.sim_param_keys.append(key)
         

@@ -245,7 +245,7 @@ class MCMCModel(object):
         for key in self.initial_value_keys:
             self.initial_components[key].initial_value=theta[self.index[key]]
         
-        
+            
         # run the sim
         self.sim.run_fast()
         

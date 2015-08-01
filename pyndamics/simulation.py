@@ -449,6 +449,7 @@ class Simulation(object):
         self.method=method
         self.show=True
         self.original_params={}
+        self.initial_value={}
         self.extra={}
         self.omit=[]
         
@@ -474,6 +475,7 @@ class Simulation(object):
         return interp(t,self.data_delay[var]['t'],self.data_delay[var]['value'])
         
     def make_func(self):
+        from numba import jit
     
         all_eq=True
         all_diffeq=True
@@ -495,13 +497,14 @@ class Simulation(object):
             
     
         _sim=self
+
         s="def _simfunc(_vec,t,_sim):\n"
 
         for _f in self.myfunctions:
             s=s+"    %s=_sim.myfunctions['%s']\n" % (_f,_f)
         
         for _i,_c in enumerate(_sim.components):
-            s=s+"    initial_%s=%s\n" % (_c.name,str(_c.initial_value))
+            s=s+"    initial_%s=_sim.initial_value['%s']\n" % (_c.name,_c.name)
         s=s+"\n"
         
         for key in _sim.original_params:
@@ -673,7 +676,9 @@ class Simulation(object):
             self.data_delay[c.name]={'t':[],'value':[]}
             cc.append(c)
             
-            
+        
+    def initial_values(self,**kwargs):
+            self.initial_value.update(kwargs)
         
     def params(self,**kwargs):
         self.myparams.update(kwargs)
@@ -874,6 +879,9 @@ class Simulation(object):
             
         t=linspace(t_min,t_max,num_iterations)
         y0=[c.initial_value for c in self.components]
+        for c in self.components:
+            self.initial_value[c.name]=c.initial_value
+
         func=self.func
 
         # I got sick of the ridiculous messages when trying to run fast
@@ -944,6 +952,8 @@ class Simulation(object):
         vec=[]
         for c in self.components:
             vec.append(c.initial_value)
+            self.initial_value[c.name]=c.initial_value
+
         vec=array(vec)
             
         t=t_min

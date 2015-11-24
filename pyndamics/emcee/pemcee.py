@@ -300,9 +300,17 @@ class MCMCModel(object):
 
     def lnprob(self,theta):
         lp = self.lnprior(theta)
+        if np.isnan(lp):
+            return -np.inf
+
         if not np.isfinite(lp):
             return -np.inf
-        return lp + self.lnlike(theta)        
+
+        lnl=self.lnlike(theta)  
+        if np.isnan(lnl):
+            return -np.inf
+            
+        return lp + lnl      
 
     def __call__(self,theta):
         return self.lnprob(theta)

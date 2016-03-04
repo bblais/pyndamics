@@ -681,6 +681,11 @@ class Simulation(object):
             self.initial_value.update(kwargs)
         
     def params(self,**kwargs):
+        for name in kwargs:
+            if name in [c.name for c in self.components]:
+                raise ValueError,"Parameter name %s already a variable." % name
+
+
         self.myparams.update(kwargs)
         self.original_params.update(kwargs)
         

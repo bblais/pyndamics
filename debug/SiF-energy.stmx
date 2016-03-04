@@ -1,0 +1,633 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xmile version="1.0" level="3" xmlns="http://www.systemdynamics.org/XMILE" xmlns:isee="http://iseesystems.com/XMILE">
+    <header>
+        <smile version="1.0" namespace="std, isee">
+            <uses_arrays>1</uses_arrays>
+        </smile>
+        <name>US-electricity</name>
+        <uuid>fb327118-99b2-4f38-8b2f-b6f4b38388db</uuid>
+        <vendor>isee systems, inc.</vendor>
+        <product version="1.0" isee:saved_by_v1="true" isee:compatibility="10.1" lang="en">Stella Professional</product>
+    </header>
+    <sim_specs method="Euler" time_units="years" isee:pause_after_rates="false" isee:instantaneous_flows="true">
+        <start>2015</start>
+        <stop>2065</stop>
+        <dt reciprocal="true">0.25</dt>
+    </sim_specs>
+    <dimensions>
+        <dim name="Type">
+            <elem name="Coal" />
+            <elem name="Natural_Gas" />
+            <elem name="Nuclear" />
+            <elem name="Hydro" />
+            <elem name="Renewables" />
+            <elem name="Other" />
+        </dim>
+    </dimensions>
+    <isee:prefs show_module_prefix="true" layer="model" />
+    <isee:equation_prefs />
+    <style>
+        <model font-name="Arial" font-size="9pt" />
+        <interface font-name="Arial" font-size="9pt" />
+    </style>
+    <model_units>
+        <units name="Dimensionless">
+            <eqn>1</eqn>
+            <alias>dmnl</alias>
+            <alias>unitless</alias>
+        </units>
+        <units name="Days">
+            <eqn />
+            <alias>day</alias>
+        </units>
+        <units name="Years">
+            <eqn />
+            <alias>yr</alias>
+            <alias>year</alias>
+        </units>
+        <units name="kilowatt hours per day">
+            <eqn>kWh/day</eqn>
+        </units>
+        <units name="kilowatts">
+            <eqn>kW</eqn>
+            <alias>kilowatt</alias>
+        </units>
+    </model_units>
+    <model>
+        <stock name="Coal_Generation\nCapacity">
+            <eqn>3845 {million}</eqn>
+            <inflow>developing_coal</inflow>
+            <outflow>converting_to_natural_gas</outflow>
+            <outflow>retiring_coal</outflow>
+            <non_negative />
+            <units>kilowatt hours per day</units>
+            <display x="261" y="68.6667" />
+        </stock>
+        <stock name="Natural_Gas\nGeneration_Capacity">
+            <eqn>3655 {million}</eqn>
+            <inflow>converting_to_natural_gas</inflow>
+            <inflow>developing_natural_gas</inflow>
+            <outflow>retiring_natural_gas</outflow>
+            <non_negative />
+            <units>kilowatt hours per day</units>
+            <display label_side="bottom" label_angle="270" x="238.5" y="221.167" width="45" height="35" />
+        </stock>
+        <stock name="Nuclear_Generation\nCapacity">
+            <eqn>2182  {million}</eqn>
+            <inflow>developing_nuclear</inflow>
+            <outflow>retiring_nuclear</outflow>
+            <non_negative />
+            <units>kilowatt hours per day</units>
+            <display x="261" y="381.667" />
+        </stock>
+        <stock name="Renewables\nGeneration_Capacity">
+            <eqn>801 {million}</eqn>
+            <inflow>developing_renewables</inflow>
+            <outflow>retiring_renewables</outflow>
+            <non_negative />
+            <units>kilowatt hours per day</units>
+            <display x="662" y="202.667" />
+        </stock>
+        <stock name="Hydro_Generation\nCapacity">
+            <eqn>638 {million}</eqn>
+            <inflow>developing_hydro</inflow>
+            <outflow>retiring_hydro</outflow>
+            <non_negative />
+            <units>kilowatt hours per day</units>
+            <display x="662" y="68.6667" />
+        </stock>
+        <stock name="Other_Generation\nCapacity">
+            <eqn>155 {million}</eqn>
+            <inflow>developing_other</inflow>
+            <outflow>retiring_other</outflow>
+            <non_negative />
+            <units>kilowatt hours per day</units>
+            <display x="662" y="310.667" />
+        </stock>
+        <flow name="converting_to\nnatural_gas">
+            <eqn>desired_conversion/time_to_convert_coal</eqn>
+            <non_negative />
+            <units>kilowatt hours per day/years</units>
+            <display label_side="right" x="261" y="147.667">
+                <pts>
+                    <pt x="261" y="86.1667" />
+                    <pt x="261" y="221.167" />
+                </pts>
+            </display>
+        </flow>
+        <flow name="retiring_coal">
+            <eqn>Coal_Generation_Capacity/average_coal_service_life</eqn>
+            <non_negative />
+            <units>kilowatt hours per day/years</units>
+            <display x="326.167" y="68.6667">
+                <pts>
+                    <pt x="283.5" y="68.6667" />
+                    <pt x="392.833" y="68.6667" />
+                </pts>
+            </display>
+        </flow>
+        <flow name="retiring\nnatural_gas">
+            <eqn>Natural_Gas_Generation_Capacity/average_gas_service_life</eqn>
+            <non_negative />
+            <units>kilowatt hours per day/years</units>
+            <display label_angle="270" x="317.167" y="229.667" width="18" height="18">
+                <pts>
+                    <pt x="283.5" y="238.667" />
+                    <pt x="392.833" y="238.667" />
+                </pts>
+            </display>
+        </flow>
+        <flow name="retiring_nuclear">
+            <eqn>Nuclear_Generation_Capacity/average_nuclear_service_life</eqn>
+            <non_negative />
+            <units>kilowatt hours per day/years</units>
+            <display x="326.167" y="381.667">
+                <pts>
+                    <pt x="283.5" y="381.667" />
+                    <pt x="392.833" y="381.667" />
+                </pts>
+            </display>
+        </flow>
+        <flow name="retiring_hydro">
+            <eqn>Hydro_Generation_Capacity/average_hydro_service_life</eqn>
+            <non_negative />
+            <units>kilowatt hours per day/years</units>
+            <display x="718.5" y="59.6667" width="18" height="18">
+                <pts>
+                    <pt x="684.5" y="68.6667" />
+                    <pt x="794.5" y="68.6667" />
+                </pts>
+            </display>
+        </flow>
+        <flow name="retiring\nrenewables">
+            <eqn>Renewables_Generation_Capacity/average_renewables_service_life</eqn>
+            <non_negative />
+            <units>kilowatt hours per day/years</units>
+            <display x="727.5" y="202.667">
+                <pts>
+                    <pt x="684.5" y="202.667" />
+                    <pt x="794.5" y="202.667" />
+                </pts>
+            </display>
+        </flow>
+        <flow name="retiring_other">
+            <eqn>Other_Generation_Capacity/average_other_service_life</eqn>
+            <non_negative />
+            <units>kilowatt hours per day/years</units>
+            <display x="727.5" y="310.667">
+                <pts>
+                    <pt x="684.5" y="310.667" />
+                    <pt x="794.5" y="310.667" />
+                </pts>
+            </display>
+        </flow>
+        <aux name="average_hydro\nservice_life">
+            <eqn>50</eqn>
+            <units>years</units>
+            <display x="774.5" y="102" />
+        </aux>
+        <aux name="average_coal\nservice_life">
+            <eqn>40</eqn>
+            <units>years</units>
+            <display x="377" y="102" />
+        </aux>
+        <aux name="average_gas\nservice_life">
+            <eqn>45</eqn>
+            <units>years</units>
+            <display x="377" y="270.667" />
+        </aux>
+        <aux name="average_renewables\nservice_life">
+            <eqn>30</eqn>
+            <units>years</units>
+            <display label_angle="270" x="774.5" y="234.667" />
+        </aux>
+        <aux name="average_nuclear\nservice_life">
+            <eqn>80</eqn>
+            <units>years</units>
+            <display x="377" y="416.667" />
+        </aux>
+        <aux name="average_other\nservice_life">
+            <eqn>35</eqn>
+            <units>years</units>
+            <display label_angle="270" x="774.5" y="345.667" />
+        </aux>
+        <flow name="developing_coal">
+            <eqn>desired_increase[Coal]/time_to_build_coal</eqn>
+            <non_negative />
+            <units>kilowatt hours per day/years</units>
+            <display x="178.75" y="59.6667" width="18" height="18">
+                <pts>
+                    <pt x="137" y="68.6667" />
+                    <pt x="238.5" y="68.6667" />
+                </pts>
+            </display>
+        </flow>
+        <flow name="developing\nnatural_gas">
+            <eqn>(desired_increase[Natural_Gas] - desired_conversion)/time_to_build_natural_gas</eqn>
+            <non_negative />
+            <units>kilowatt hours per day/years</units>
+            <display x="178.334" y="229.667" width="18" height="18">
+                <pts>
+                    <pt x="136.167" y="238.667" />
+                    <pt x="238.5" y="238.667" />
+                </pts>
+            </display>
+        </flow>
+        <flow name="developing\nnuclear">
+            <eqn>desired_increase[Nuclear]/time_to_build_nuclear</eqn>
+            <non_negative />
+            <units>kilowatt hours per day/years</units>
+            <display x="187.334" y="381.667">
+                <pts>
+                    <pt x="136.167" y="381.667" />
+                    <pt x="238.5" y="381.667" />
+                </pts>
+            </display>
+        </flow>
+        <flow name="developing_hydro">
+            <eqn>desired_increase[Hydro]/time_to_build_hydro</eqn>
+            <non_negative />
+            <units>kilowatt hours per day/years</units>
+            <display x="588.25" y="68.6667">
+                <pts>
+                    <pt x="537" y="68.6667" />
+                    <pt x="639.5" y="68.6667" />
+                </pts>
+            </display>
+        </flow>
+        <flow name="developing\nrenewables">
+            <eqn>desired_increase[Renewables]/time_to_build_renewables</eqn>
+            <non_negative />
+            <units>kilowatt hours per day/years</units>
+            <display x="588.667" y="202.667">
+                <pts>
+                    <pt x="537.833" y="202.667" />
+                    <pt x="639.5" y="202.667" />
+                </pts>
+            </display>
+        </flow>
+        <flow name="developing_other">
+            <eqn>desired_increase[Other]/time_to_build_other</eqn>
+            <non_negative />
+            <units>kilowatt hours per day/years</units>
+            <display x="588.25" y="314.833">
+                <pts>
+                    <pt x="537" y="314.833" />
+                    <pt x="639.5" y="314.833" />
+                </pts>
+            </display>
+        </flow>
+        <aux name="Total\nCapacity">
+            <eqn>Coal_Generation_Capacity + Hydro_Generation_Capacity + Natural_Gas_Generation_Capacity + Nuclear_Generation_Capacity + Other_Generation_Capacity + Renewables_Generation_Capacity</eqn>
+            <isee:summing />
+            <units>kilowatt hours per day</units>
+            <display x="568.5" y="459.833" />
+        </aux>
+        <aux name="time_to\nbuild_coal">
+            <eqn>4</eqn>
+            <units>years</units>
+            <display label_side="left" label_angle="180" x="133.667" y="42.6667" />
+        </aux>
+        <aux name="time_to\nconvert_coal">
+            <eqn>1</eqn>
+            <units>years</units>
+            <display label_side="right" label_angle="360" x="325.167" y="177.334" />
+        </aux>
+        <aux name="time_to\nbuild_nuclear">
+            <eqn>6</eqn>
+            <units>years</units>
+            <display x="133.667" y="416.667" />
+        </aux>
+        <aux name="time_to_build\nnatural_gas">
+            <eqn>3</eqn>
+            <units>years</units>
+            <display x="133.667" y="270.667" />
+        </aux>
+        <aux name="time_to\nbuild_hydro">
+            <eqn>4</eqn>
+            <units>years</units>
+            <display label_angle="270" x="530.834" y="102" />
+        </aux>
+        <aux name="time_to_build\nrenewables">
+            <doc>Wind is 3 onshore, 4 offshore&#x0A;Solar is 2 (photovoltaic), but solar thermal is 3&#x0A;&#x0A;If this is primarily solar (photovoltaic), it should be lowered to 2 - and if residential solar maybe 0.5.  If this is primarily offshore wind, it should be raised to 4.</doc>
+            <eqn>3</eqn>
+            <units>years</units>
+            <display x="533.834" y="234.667" />
+        </aux>
+        <aux name="time_to\nbuild_other">
+            <eqn>3</eqn>
+            <units>years</units>
+            <display x="533.834" y="345.667" />
+        </aux>
+        <aux name="Desired\nCapacity">
+            <doc>This is total generation in 2015.  Let&apos;s assume constant demand, i.e., conservation reduces need to add additional capacity.</doc>
+            <eqn>11275 {million}</eqn>
+            <units>kilowatt hours per day</units>
+            <display x="505.667" y="459.833" />
+        </aux>
+        <aux name="capacity_gap">
+            <eqn>Desired_Capacity - Total_Capacity {million}</eqn>
+            <units>kilowatt hours per day</units>
+            <display x="537.667" y="417.5" />
+        </aux>
+        <array name="relative\ncost">
+            <dimensions>
+                <dim name="Type" />
+            </dimensions>
+            <aux subscript="Coal">
+                <eqn>3.3</eqn>
+            </aux>
+            <aux subscript="Natural_Gas">
+                <eqn>1</eqn>
+            </aux>
+            <aux subscript="Nuclear">
+                <eqn>5.4</eqn>
+            </aux>
+            <aux subscript="Hydro">
+                <eqn>2.6</eqn>
+            </aux>
+            <aux subscript="Renewables">
+                <eqn>3.8</eqn>
+            </aux>
+            <aux subscript="Other">
+                <eqn>4.5</eqn>
+            </aux>
+            <units>dimensionless</units>
+            <display x="619" y="470.333" />
+        </array>
+        <array name="emissions\nequivalent">
+            <dimensions>
+                <dim name="Type" />
+            </dimensions>
+            <aux subscript="Coal">
+                <eqn>215</eqn>
+            </aux>
+            <aux subscript="Natural_Gas">
+                <eqn>117</eqn>
+            </aux>
+            <aux subscript="Nuclear">
+                <eqn>50</eqn>
+            </aux>
+            <aux subscript="Hydro">
+                <eqn>20</eqn>
+            </aux>
+            <aux subscript="Renewables">
+                <eqn>0</eqn>
+            </aux>
+            <aux subscript="Other">
+                <eqn>150</eqn>
+            </aux>
+            <units>pounds CO2 per Btu</units>
+            <display x="733.833" y="462.5" />
+        </array>
+        <aux name="tentative_mix">
+            <dimensions>
+                <dim name="Type" />
+            </dimensions>
+            <eqn>MAX(relative_benefit[Type]/SUM(relative_benefit) - 0.5*emissions_equivalent[Type]/SUM(emissions_equivalent),  0)</eqn>
+            <units>dimensionless</units>
+            <display x="699.75" y="417.5" />
+        </aux>
+        <aux name="relative\nbenefit">
+            <dimensions>
+                <dim name="Type" />
+            </dimensions>
+            <eqn>MAX(relative_cost) - relative_cost[Type] + MIN(relative_cost)</eqn>
+            <units>dimensionless</units>
+            <display label_angle="270" x="667.167" y="453.5" />
+        </aux>
+        <aux name="desired_mix">
+            <dimensions>
+                <dim name="Type" />
+            </dimensions>
+            <eqn>tentative_mix/SUM(tentative_mix)</eqn>
+            <units>dimensionless</units>
+            <display x="646.167" y="399.5" />
+        </aux>
+        <aux name="desired\nincrease">
+            <dimensions>
+                <dim name="Type" />
+            </dimensions>
+            <eqn>desired_mix*capacity_gap</eqn>
+            <units>kilowatt hours per day</units>
+            <display x="594.167" y="386.167" />
+        </aux>
+        <aux name="desired\nconversion">
+            <eqn>0.5*desired_increase[Natural_Gas]*capacity_effect_on_conversion</eqn>
+            <units>kilowatt hours per day</units>
+            <display label_side="top" label_angle="134.232" x="158.167" y="159.334" />
+        </aux>
+        <aux name="capacity_effect\non_conversion">
+            <eqn>Coal_Generation_Capacity/(0.5*desired_increase[Natural_Gas])</eqn>
+            <gf>
+                <xscale min="0" max="10" />
+                <yscale min="0" max="1" />
+                <ypts>0,0.31,0.51100000000000001,0.64600000000000002,0.74199999999999999,0.81700000000000006,0.878,0.92600000000000005,0.96499999999999997,0.98699999999999999,1</ypts>
+            </gf>
+            <display x="205.75" y="111.667" />
+        </aux>
+        <display show_pages="false" page_width="1536" page_height="1176" scroll_y="2.66667" zoom="300" isee:popup_graphs_are_comparative="true">
+            <connector uid="1" angle="340.821">
+                <from>Coal_Generation_Capacity</from>
+                <to>retiring_coal</to>
+            </connector>
+            <connector uid="2" angle="343.072">
+                <from>Natural_Gas_Generation_Capacity</from>
+                <to>retiring_natural_gas</to>
+            </connector>
+            <connector uid="3" angle="343.072">
+                <from>Nuclear_Generation_Capacity</from>
+                <to>retiring_nuclear</to>
+            </connector>
+            <connector uid="4" angle="338.629">
+                <from>Hydro_Generation_Capacity</from>
+                <to>retiring_hydro</to>
+            </connector>
+            <connector uid="5" angle="338.629">
+                <from>Renewables_Generation_Capacity</from>
+                <to>retiring_renewables</to>
+            </connector>
+            <connector uid="6" angle="338.629">
+                <from>Other_Generation_Capacity</from>
+                <to>retiring_other</to>
+            </connector>
+            <connector uid="7" angle="125.538">
+                <from>average_hydro_service_life</from>
+                <to>retiring_hydro</to>
+            </connector>
+            <connector uid="8" angle="125.538">
+                <from>average_coal_service_life</from>
+                <to>retiring_coal</to>
+            </connector>
+            <connector uid="9" angle="135">
+                <from>average_gas_service_life</from>
+                <to>retiring_natural_gas</to>
+            </connector>
+            <connector uid="10" angle="122.005">
+                <from>average_renewables_service_life</from>
+                <to>retiring_renewables</to>
+            </connector>
+            <connector uid="11" angle="125.538">
+                <from>average_nuclear_service_life</from>
+                <to>retiring_nuclear</to>
+            </connector>
+            <connector uid="12" angle="116.565">
+                <from>average_other_service_life</from>
+                <to>retiring_other</to>
+            </connector>
+            <connector uid="13" angle="310.601">
+                <from>time_to_build_coal</from>
+                <to>developing_coal</to>
+            </connector>
+            <connector uid="14" angle="180">
+                <from>time_to_convert_coal</from>
+                <to>converting_to_natural_gas</to>
+            </connector>
+            <connector uid="15" angle="45">
+                <from>time_to_build_nuclear</from>
+                <to>developing_nuclear</to>
+            </connector>
+            <connector uid="16" angle="49.3987">
+                <from>time_to_build_natural_gas</from>
+                <to>developing_natural_gas</to>
+            </connector>
+            <connector uid="17" angle="49.3987">
+                <from>time_to_build_hydro</from>
+                <to>developing_hydro</to>
+            </connector>
+            <connector uid="18" angle="45">
+                <from>time_to_build_renewables</from>
+                <to>developing_renewables</to>
+            </connector>
+            <connector uid="19" angle="45">
+                <from>time_to_build_other</from>
+                <to>developing_other</to>
+            </connector>
+            <connector uid="20" angle="96.3402">
+                <from>Desired_Capacity</from>
+                <to>capacity_gap</to>
+            </connector>
+            <connector uid="21" angle="77.4712">
+                <from>Total_Capacity</from>
+                <to>capacity_gap</to>
+            </connector>
+            <connector uid="22" angle="83.6598">
+                <from>emissions_equivalent</from>
+                <to>tentative_mix</to>
+            </connector>
+            <connector uid="23" angle="35.5377">
+                <from>relative_cost</from>
+                <to>relative_benefit</to>
+            </connector>
+            <connector uid="24" angle="96.3402">
+                <from>relative_benefit</from>
+                <to>tentative_mix</to>
+            </connector>
+            <connector uid="25" angle="116.565">
+                <from>tentative_mix</from>
+                <to>desired_mix</to>
+            </connector>
+            <connector uid="26" angle="49.3987">
+                <from>capacity_gap</from>
+                <to>desired_increase</to>
+            </connector>
+            <connector uid="27" angle="144.462">
+                <from>desired_mix</from>
+                <to>desired_increase</to>
+            </connector>
+            <alias font-style="italic" uid="28" x="220.5" y="407.667" width="18" height="18">
+                <of>desired&#x0A;increase</of>
+            </alias>
+            <connector uid="29" angle="122.005">
+                <from>
+                    <alias uid="28" />
+                </from>
+                <to>developing_nuclear</to>
+            </connector>
+            <alias font-style="italic" uid="30" x="80.5833" y="124.667" width="18" height="18">
+                <label_side>left</label_side>
+                <label_angle>180</label_angle>
+                <of>desired&#x0A;increase</of>
+            </alias>
+            <connector uid="31" angle="54.4623">
+                <from>
+                    <alias uid="30" />
+                </from>
+                <to>developing_coal</to>
+            </connector>
+            <alias font-style="italic" uid="32" x="593" y="120.667" width="18" height="18">
+                <label_side>right</label_side>
+                <label_angle>360</label_angle>
+                <of>desired&#x0A;increase</of>
+            </alias>
+            <connector uid="33" angle="77.4712">
+                <from>
+                    <alias uid="32" />
+                </from>
+                <to>developing_hydro</to>
+            </connector>
+            <connector uid="34" angle="290.556">
+                <from>
+                    <alias uid="32" />
+                </from>
+                <to>developing_renewables</to>
+            </connector>
+            <connector uid="35" angle="63.4349">
+                <from>desired_increase</from>
+                <to>developing_other</to>
+            </connector>
+            <connector uid="36" angle="305.538">
+                <from>
+                    <alias uid="30" />
+                </from>
+                <to>developing_natural_gas</to>
+            </connector>
+            <connector uid="37" angle="324.462">
+                <from>
+                    <alias uid="30" />
+                </from>
+                <to>desired_conversion</to>
+            </connector>
+            <connector uid="38" angle="333.435">
+                <from>desired_conversion</from>
+                <to>converting_to_natural_gas</to>
+            </connector>
+            <connector uid="39" angle="263.66">
+                <from>desired_conversion</from>
+                <to>developing_natural_gas</to>
+            </connector>
+            <connector uid="40" angle="210.579">
+                <from>Coal_Generation_Capacity</from>
+                <to>capacity_effect_on_conversion</to>
+            </connector>
+            <connector uid="41" angle="26.5651">
+                <from>
+                    <alias uid="30" />
+                </from>
+                <to>capacity_effect_on_conversion</to>
+            </connector>
+            <connector uid="42" angle="220.601">
+                <from>capacity_effect_on_conversion</from>
+                <to>desired_conversion</to>
+            </connector>
+            <style color="blue" background="white" font-style="normal" font-weight="normal" text-decoration="none" text-align="center" vertical-text-align="center" text-background="white" font-color="blue" font-family="Arial" font-size="9pt" padding="2" border-color="black" border-width="1" border-style="none">
+                <connector color="#FF007F" font-color="#FF007F" isee:thickness="1" />
+                <text_box color="blue" background="white" font-style="normal" font-weight="normal" text-decoration="none" text-align="left" vertical-text-align="top" text-background="white" font-color="black" font-family="Arial" font-size="9pt" padding="2" border-color="black" border-width="1" border-style="none" />
+                <numeric_display color="blue" background="white" font-style="normal" font-weight="normal" text-decoration="none" text-align="left" vertical-text-align="top" text-background="white" font-color="black" font-family="Arial" font-size="9pt" padding="2" border-color="black" border-width="1" border-style="none" />
+                <graph color="black" background="white" font-style="normal" font-weight="normal" text-decoration="none" text-align="center" vertical-text-align="center" text-background="white" font-color="black" font-family="Arial" font-size="12pt" padding="2" border-color="black" border-width="1" border-style="none" axis-color="#666666" grid-color="#C8C8C8" legend-position="bottom" axis-title-font-style="normal" axis-title-font-weight="normal" axis-title-text-decoration="none" axis-title-text-align="center" axis-title-vertical-text-align="center" axis-title-text-background="white" axis-title-font-color="black" axis-title-font-family="Arial" axis-title-font-size="12pt" axis-title-text-padding="2" axis-title-text-border-color="black" axis-title-text-border-width="1" axis-title-text-border-style="none" axis-label-font-style="normal" axis-label-font-weight="normal" axis-label-text-decoration="none" axis-label-text-align="center" axis-label-vertical-text-align="center" axis-label-text-background="white" axis-label-font-color="black" axis-label-font-family="Arial" axis-label-font-size="9pt" axis-label-text-padding="2" axis-label-text-border-color="black" axis-label-text-border-width="1" axis-label-text-border-style="none" />
+                <table color="black" background="#E0E0E0" font-style="normal" font-weight="normal" text-decoration="none" text-align="right" vertical-text-align="center" text-background="white" font-color="black" font-family="Arial" font-size="12pt" padding="2" border-color="black" border-width="1" border-style="none" orientation="vertical" wrap_text="false" auto_fit="true" use_alternate_row_colors="false" horizontal_scrolling_enabled="true" blank_column_width="80" column_width="160" hide_detail="false" interval="1" isee:report_month_names="false" header-font-style="normal" header-font-weight="normal" header-text-decoration="none" header-text-align="center" header-vertical-text-align="center" header-text-background="white" header-font-color="black" header-font-family="Arial" header-font-size="12pt" header-text-padding="2" header-text-border-color="black" header-text-border-width="1" header-text-border-style="none" />
+            </style>
+        </display>
+        <interface show_pages="false" page_width="800" page_height="600">
+            <simulation_delay>0.196078</simulation_delay>
+            <pages />
+        </interface>
+        <style color="blue" background="white" font-style="normal" font-weight="normal" text-decoration="none" text-align="center" vertical-text-align="center" text-background="white" font-color="blue" font-family="Arial" font-size="9pt" padding="2" border-color="black" border-width="1" border-style="none">
+            <stock label_side="top" label_angle="0" size="medium" />
+            <flow label_side="bottom" label_angle="0" />
+            <module label_side="top" label_angle="0" size="medium" />
+            <aux label_side="bottom" label_angle="0" size="medium" />
+            <group color="red" font-color="red" />
+        </style>
+    </model>
+</xmile>

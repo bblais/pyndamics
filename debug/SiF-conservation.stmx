@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xmile version="1.0" level="3" xmlns="http://www.systemdynamics.org/XMILE" xmlns:isee="http://iseesystems.com/XMILE">
+    <header>
+        <smile version="1.0" namespace="std, isee">
+            <uses_arrays>1</uses_arrays>
+        </smile>
+        <name>Fishbanks SIF</name>
+        <uuid>09b9f3c0-f3ab-4b3f-816e-d219277f9dd2</uuid>
+        <vendor>isee systems, inc.</vendor>
+        <product version="1.0.2" isee:saved_by_v1="true" isee:compatibility="10.1" lang="en">Stella Professional</product>
+    </header>
+    <sim_specs method="Euler" time_units="Years" isee:pause_after_rates="false" isee:instantaneous_flows="false">
+        <start>1</start>
+        <stop>7</stop>
+        <dt>0.25</dt>
+    </sim_specs>
+    <dimensions>
+        <dim name="Dim_Name_1" size="1" />
+    </dimensions>
+    <isee:prefs layer="model" grid_width="20" grid_height="50" divide_by_zero_alert="true" hide_taskbar="true" show_module_prefix="true">
+        <isee:window width="798" height="564" />
+        <isee:security />
+        <isee:print_setup width="763" height="588" />
+    </isee:prefs>
+    <isee:prefs show_module_prefix="true" layer="map" />
+    <isee:equation_prefs order_by="sector" show_documentation="true" />
+    <style>
+        <model font-name="Arial" font-size="9pt" />
+        <interface font-name="Arial" font-size="9pt" />
+    </style>
+    <model_units />
+    <model>
+        <stock name="Fish">
+            <eqn>3750</eqn>
+            <inflow>fish_births</inflow>
+            <outflow>fish_deaths</outflow>
+            <outflow>fish_catch</outflow>
+            <non_negative />
+            <display x="217" y="90" />
+        </stock>
+        <flow name="fish_births">
+            <eqn>birth_rate*Fish</eqn>
+            <non_negative />
+            <display x="145.25" y="91">
+                <pts>
+                    <pt x="96" y="91" />
+                    <pt x="194.5" y="91" />
+                </pts>
+            </display>
+        </flow>
+        <flow name="fish_deaths">
+            <eqn>death_rate*Fish</eqn>
+            <non_negative />
+            <display x="284.25" y="91">
+                <pts>
+                    <pt x="239.5" y="91" />
+                    <pt x="353" y="91" />
+                </pts>
+            </display>
+        </flow>
+        <aux name="birth_rate">
+            <eqn>density_effect_on_birth_rate*normal_birth_rate</eqn>
+            <display x="98" y="123" />
+        </aux>
+        <aux name="death_rate">
+            <eqn>density_effect_on_death_rate*normal_death_rate</eqn>
+            <display label_side="right" x="376" y="122" />
+        </aux>
+        <aux name="carrying\ncapacity">
+            <eqn>5000</eqn>
+            <display x="247" y="191.667" />
+        </aux>
+        <aux name="fish_density">
+            <eqn>Fish/carrying_capacity</eqn>
+            <display x="257" y="146" />
+        </aux>
+        <flow name="fish_catch">
+            <eqn>catch_per_ship*Ships_At_Sea</eqn>
+            <non_negative />
+            <display x="274.167" y="235.167" width="18" height="18">
+                <pts>
+                    <pt x="217" y="107.5" />
+                    <pt x="217" y="244.167" />
+                    <pt x="373.333" y="244.167" />
+                </pts>
+            </display>
+        </flow>
+        <aux name="catch_per_ship\nnormal">
+            <eqn>25</eqn>
+            <display x="419.167" y="226.833" width="18" height="18" />
+        </aux>
+        <aux name="density_effect\non_catch_per_ship">
+            <doc>As density increases, so does fish catch.  This is ostensibly a exponential approach to a limit, but it is a little deformed near zero as it drops near and then smoothly approaches zero from a positive non-zero value.</doc>
+            <eqn>fish_density</eqn>
+            <gf>
+                <yscale min="0" max="1" />
+                <xpts>0,0.10000000000000001,0.20000000000000001,0.30000000000000004,0.40000000000000002,0.5,0.59999999999999998,0.69999999999999996,0.79999999999999993,0.89999999999999991,0.99999999999999989</xpts>
+                <ypts>0,0.14999999999999999,0.61499999999999999,0.70000000000000007,0.755,0.80500000000000005,0.87,0.92500000000000004,0.96999999999999997,1,1</ypts>
+            </gf>
+            <display label_side="right" label_angle="360" x="383" y="191.667" />
+        </aux>
+        <aux name="catch_per_ship">
+            <eqn>density_effect_on_catch_per_ship*catch_per_ship_normal</eqn>
+            <display x="333" y="209.667" />
+        </aux>
+        <stock name="Ships_At_Sea">
+            <eqn>30</eqn>
+            <inflow>new_ships</inflow>
+            <non_negative />
+            <display label_side="bottom" x="166.667" y="291.5" />
+        </stock>
+        <flow name="new_ships">
+            <eqn>buying_pattern_for_ships&#x0A;&#x0A;{ preprogrammed sequence of ship buying decisions - user should make these decisions based on Cash and/or fish catch }</eqn>
+            <non_negative />
+            <display x="95.4167" y="292.5">
+                <pts>
+                    <pt x="46.6667" y="292.5" />
+                    <pt x="144.167" y="292.5" />
+                </pts>
+            </display>
+        </flow>
+        <aux name="price_per_ship">
+            <eqn>300</eqn>
+            <display x="141.667" y="416.833" width="18" height="18" />
+        </aux>
+        <aux name="price_per_fish">
+            <eqn>10</eqn>
+            <display x="461.333" y="412.5" />
+        </aux>
+        <flow name="expenses">
+            <doc>There are two additional expenses that are not modeled:  The maintanence cost of an idle ship (all ships are fishing in this model) and the cost of any interest on a loan for a negative cash balance (earning interest on a positive balance is also not modeled).</doc>
+            <eqn>cost_of_new_ships + maintenance_cost</eqn>
+            <non_negative />
+            <display x="297.917" y="379.5">
+                <pts>
+                    <pt x="334.167" y="379.5" />
+                    <pt x="237.667" y="379.5" />
+                </pts>
+            </display>
+        </flow>
+        <stock name="Cash">
+            <eqn>0</eqn>
+            <inflow>revenues</inflow>
+            <outflow>expenses</outflow>
+            <display x="356.667" y="377.5" />
+        </stock>
+        <flow name="revenues">
+            <eqn>price_per_fish*fish_catch</eqn>
+            <non_negative />
+            <display x="423.917" y="379.5">
+                <pts>
+                    <pt x="468.667" y="379.5" />
+                    <pt x="379.167" y="379.5" />
+                </pts>
+            </display>
+        </flow>
+        <aux name="maintenance\ncost_per_ship">
+            <eqn>30</eqn>
+            <display label_side="right" label_angle="360" x="279.5" y="297.333" />
+        </aux>
+        <aux name="cost_of\nnew_ships" flow_concept="true">
+            <eqn>price_per_ship*new_ships</eqn>
+            <display x="198.167" y="399.5" />
+        </aux>
+        <aux name="maintenance\ncost">
+            <eqn>maintenance_cost_per_ship*Ships_At_Sea</eqn>
+            <display label_side="left" label_angle="225" x="246.667" y="334.5" />
+        </aux>
+        <aux name="regeneration_rate">
+            <eqn>(fish_births - fish_deaths)/Fish</eqn>
+            <display label_side="top" label_angle="90" x="165" y="21.8333" width="18" height="18" />
+        </aux>
+        <aux name="density_effect\non_birth_rate">
+            <doc>A density increases, so does the birth rate.  This happens faster than the death rate making regeneration higher at a  moderate density than at either extreme.</doc>
+            <eqn>fish_density</eqn>
+            <gf>
+                <yscale min="0" max="1" />
+                <xpts>0,0.10000000000000001,0.20000000000000001,0.30000000000000004,0.40000000000000002,0.5,0.59999999999999998,0.69999999999999996,0.79999999999999993,0.89999999999999991,0.99999999999999989</xpts>
+                <ypts>0,0.435,0.63500000000000001,0.76000000000000001,0.85999999999999999,0.93000000000000005,0.97999999999999998,1,1,1,1</ypts>
+            </gf>
+            <display x="156" y="157" />
+        </aux>
+        <aux name="normal_birth_rate">
+            <eqn>0.2</eqn>
+            <display x="60.5" y="160" />
+        </aux>
+        <aux name="normal_death_rate">
+            <eqn>0.1</eqn>
+            <display x="435.833" y="147" />
+        </aux>
+        <aux name="density_effect\non_death_rate">
+            <doc>Death rate increase moderately with density until the fishery becomes quite crowded.  Then it increases quite quickly.</doc>
+            <eqn>fish_density</eqn>
+            <gf>
+                <yscale min="0" max="2" />
+                <xpts>0,0.10000000000000001,0.20000000000000001,0.30000000000000004,0.40000000000000002,0.5,0.59999999999999998,0.69999999999999996,0.79999999999999993,0.89999999999999991,0.99999999999999989</xpts>
+                <ypts>0,0.029999999999999999,0.059999999999999998,0.10000000000000001,0.14000000000000001,0.22,0.31,0.45000000000000001,0.78000000000000003,1.8500000000000001,2</ypts>
+            </gf>
+            <display label_side="top" label_angle="90" x="324.333" y="165" />
+        </aux>
+        <aux name="Assets">
+            <eqn>Cash + salvage_value_per_ship*Ships_At_Sea</eqn>
+            <display x="367.667" y="437.5" />
+        </aux>
+        <aux name="salvage_value\nper_ship">
+            <eqn>100</eqn>
+            <display x="324.333" y="467" />
+        </aux>
+        <aux name="buying_pattern\nfor_ships">
+            <eqn>TIME</eqn>
+            <gf type="discrete">
+                <xscale min="1" max="7" />
+                <yscale min="0" max="50" />
+                <ypts>30,20,20,10,5,0,0</ypts>
+            </gf>
+            <display x="50.8333" y="341.667" />
+        </aux>
+        <display show_pages="false" page_width="1024" page_height="770" page_cols="2" zoom="120" isee:popup_graphs_are_comparative="true">
+            <connector uid="1" isee:thickness="1" angle="208.61">
+                <from>Fish</from>
+                <to>fish_births</to>
+            </connector>
+            <connector uid="2" isee:thickness="1" angle="337.751">
+                <from>Fish</from>
+                <to>fish_deaths</to>
+            </connector>
+            <connector uid="3" isee:thickness="1" angle="49.3987">
+                <from>birth_rate</from>
+                <to>fish_births</to>
+            </connector>
+            <connector uid="4" isee:thickness="1" angle="103.65">
+                <from>carrying_capacity</from>
+                <to>fish_density</to>
+            </connector>
+            <connector uid="5" isee:thickness="1" angle="325.008">
+                <from>fish_density</from>
+                <to>density_effect_on_death_rate</to>
+            </connector>
+            <connector uid="6" isee:thickness="1" angle="143.13">
+                <from>death_rate</from>
+                <to>fish_deaths</to>
+            </connector>
+            <connector uid="7" isee:thickness="1" angle="283.241">
+                <from>Fish</from>
+                <to>fish_density</to>
+            </connector>
+            <connector uid="8" isee:thickness="1" angle="325.069">
+                <from>fish_density</from>
+                <to>density_effect_on_catch_per_ship</to>
+            </connector>
+            <connector uid="9" isee:thickness="1" angle="164.055">
+                <from>catch_per_ship</from>
+                <to>fish_catch</to>
+            </connector>
+            <connector uid="10" isee:thickness="1" angle="219.237">
+                <from>density_effect_on_catch_per_ship</from>
+                <to>catch_per_ship</to>
+            </connector>
+            <connector uid="11" isee:thickness="1" angle="176.594">
+                <from>catch_per_ship_normal</from>
+                <to>catch_per_ship</to>
+            </connector>
+            <connector uid="12" isee:thickness="1" angle="13.1965">
+                <from>Ships_At_Sea</from>
+                <to>fish_catch</to>
+            </connector>
+            <connector uid="13" isee:thickness="1" angle="347.471">
+                <from>fish_catch</from>
+                <to>revenues</to>
+            </connector>
+            <connector uid="14" isee:thickness="1" angle="105.945">
+                <from>price_per_fish</from>
+                <to>revenues</to>
+            </connector>
+            <connector uid="15" isee:thickness="1" angle="294.228">
+                <from>new_ships</from>
+                <to>cost_of_new_ships</to>
+            </connector>
+            <connector uid="16" isee:thickness="1" angle="357.397">
+                <from>cost_of_new_ships</from>
+                <to>expenses</to>
+            </connector>
+            <connector uid="17" isee:thickness="1" angle="201.501">
+                <from>maintenance_cost_per_ship</from>
+                <to>maintenance_cost</to>
+            </connector>
+            <connector uid="18" isee:thickness="1" angle="349.695">
+                <from>Ships_At_Sea</from>
+                <to>maintenance_cost</to>
+            </connector>
+            <connector uid="19" isee:thickness="1" angle="282.095">
+                <from>maintenance_cost</from>
+                <to>expenses</to>
+            </connector>
+            <connector uid="20" isee:thickness="1" angle="46.9749">
+                <from>price_per_ship</from>
+                <to>cost_of_new_ships</to>
+            </connector>
+            <connector uid="21" isee:thickness="1" angle="90.7409">
+                <from>fish_births</from>
+                <to>regeneration_rate</to>
+            </connector>
+            <connector uid="22" isee:thickness="1" angle="130.888">
+                <from>fish_deaths</from>
+                <to>regeneration_rate</to>
+            </connector>
+            <connector uid="23" isee:thickness="1" angle="146.628">
+                <from>Fish</from>
+                <to>regeneration_rate</to>
+            </connector>
+            <connector uid="24" isee:thickness="1" angle="210.256">
+                <from>fish_density</from>
+                <to>density_effect_on_birth_rate</to>
+            </connector>
+            <connector uid="25" isee:thickness="1" angle="161.565">
+                <from>density_effect_on_birth_rate</from>
+                <to>birth_rate</to>
+            </connector>
+            <connector uid="26" isee:thickness="1" angle="87.9174">
+                <from>normal_birth_rate</from>
+                <to>birth_rate</to>
+            </connector>
+            <connector uid="27" isee:thickness="1" angle="0">
+                <from>density_effect_on_death_rate</from>
+                <to>death_rate</to>
+            </connector>
+            <connector uid="28" isee:thickness="1" angle="168.69">
+                <from>normal_death_rate</from>
+                <to>death_rate</to>
+            </connector>
+            <connector uid="29" isee:thickness="1" angle="266.634">
+                <from>Cash</from>
+                <to>Assets</to>
+            </connector>
+            <alias font-style="italic" uid="30" x="407.333" y="449.5" width="45" height="35">
+                <label_side>bottom</label_side>
+                <of>Ships_At_Sea</of>
+            </alias>
+            <connector uid="31" isee:thickness="1" angle="133.264">
+                <from>
+                    <alias uid="30" />
+                </from>
+                <to>Assets</to>
+            </connector>
+            <connector uid="32" isee:thickness="1" angle="62.8189">
+                <from>salvage_value_per_ship</from>
+                <to>Assets</to>
+            </connector>
+            <connector uid="33" isee:thickness="1" angle="78.6901">
+                <from>buying_pattern_for_ships</from>
+                <to>new_ships</to>
+            </connector>
+            <style color="blue" background="white" font-style="normal" font-weight="normal" text-decoration="none" text-align="center" vertical-text-align="center" text-background="white" font-color="blue" font-family="Arial" font-size="9pt" padding="2" border-color="black" border-width="thin" border-style="none">
+                <connector color="#FF007F" font-color="#FF007F" isee:thickness="1" />
+                <text_box color="blue" background="white" font-style="normal" font-weight="normal" text-decoration="none" text-align="left" vertical-text-align="top" text-background="white" font-color="black" font-family="Arial" font-size="9pt" padding="2" border-color="black" border-width="thin" border-style="none" />
+                <numeric_display color="blue" background="white" font-style="normal" font-weight="normal" text-decoration="none" text-align="left" vertical-text-align="top" text-background="white" font-color="black" font-family="Arial" font-size="9pt" padding="2" border-color="black" border-width="thin" border-style="none" />
+                <graph color="black" background="white" font-style="normal" font-weight="normal" text-decoration="none" text-align="center" vertical-text-align="center" text-background="white" font-color="black" font-family="Arial" font-size="12pt" padding="2" border-color="black" border-width="thin" border-style="none" axis-color="#666666" grid-color="#C8C8C8" legend-position="bottom" axis-title-font-style="normal" axis-title-font-weight="normal" axis-title-text-decoration="none" axis-title-text-align="center" axis-title-vertical-text-align="center" axis-title-text-background="white" axis-title-font-color="black" axis-title-font-family="Arial" axis-title-font-size="12pt" axis-title-text-padding="2" axis-title-text-border-color="black" axis-title-text-border-width="thin" axis-title-text-border-style="none" axis-label-font-style="normal" axis-label-font-weight="normal" axis-label-text-decoration="none" axis-label-text-align="center" axis-label-vertical-text-align="center" axis-label-text-background="white" axis-label-font-color="black" axis-label-font-family="Arial" axis-label-font-size="9pt" axis-label-text-padding="2" axis-label-text-border-color="black" axis-label-text-border-width="thin" axis-label-text-border-style="none" />
+                <table color="black" background="#E0E0E0" font-style="normal" font-weight="normal" text-decoration="none" text-align="right" vertical-text-align="center" text-background="white" font-color="black" font-family="Arial" font-size="12pt" padding="2" border-color="black" border-width="thin" border-style="none" orientation="vertical" wrap_text="false" auto_fit="true" use_alternate_row_colors="false" horizontal_scrolling_enabled="true" blank_column_width="80" column_width="160" hide_detail="false" interval="1" isee:report_month_names="false" header-font-style="normal" header-font-weight="normal" header-text-decoration="none" header-text-align="center" header-vertical-text-align="center" header-text-background="white" header-font-color="black" header-font-family="Arial" header-font-size="12pt" header-text-padding="2" header-text-border-color="black" header-text-border-width="thin" header-text-border-style="none" />
+            </style>
+        </display>
+        <interface show_pages="false" page_width="788" page_height="528">
+            <simulation_delay>0.4</simulation_delay>
+            <pages />
+            <button text-align="center" label="Model" style="square" appearance="opaque" uid="34" background="black" height="34" font-family="Arial" width="65" color="white" y="98" font-size="12" x="144">
+                <isee:story>
+                    <isee:chapter number="1">
+                        <isee:group>
+                            <isee:entity>Fish</isee:entity>
+                            <isee:entity>fish_births</isee:entity>
+                            <isee:entity>fish_deaths</isee:entity>
+                            <isee:connector>.1</isee:connector>
+                            <isee:connector>.2</isee:connector>
+                            <isee:entity>birth_rate</isee:entity>
+                            <isee:connector>.3</isee:connector>
+                            <isee:connector>.6</isee:connector>
+                            <isee:entity>density_effect_on_birth_rate</isee:entity>
+                            <isee:connector>.25</isee:connector>
+                            <isee:entity>normal_birth_rate</isee:entity>
+                            <isee:connector>.26</isee:connector>
+                            <isee:entity>fish_density</isee:entity>
+                            <isee:connector>.7</isee:connector>
+                            <isee:connector>.24</isee:connector>
+                            <isee:entity>density_effect_on_death_rate</isee:entity>
+                            <isee:entity>density_effect_on_catch_per_ship</isee:entity>
+                            <isee:connector>.8</isee:connector>
+                            <isee:connector>.5</isee:connector>
+                            <isee:entity>Ships_At_Sea</isee:entity>
+                            <isee:connector>.18</isee:connector>
+                            <isee:entity>new_ships</isee:entity>
+                            <isee:connector>.15</isee:connector>
+                            <isee:entity>maintenance_cost_per_ship</isee:entity>
+                            <isee:connector>.17</isee:connector>
+                            <isee:entity>catch_per_ship</isee:entity>
+                            <isee:connector>.9</isee:connector>
+                            <isee:connector>.10</isee:connector>
+                            <isee:connector>.11</isee:connector>
+                            <isee:entity>carrying_capacity</isee:entity>
+                            <isee:connector>.4</isee:connector>
+                            <isee:connector>.13</isee:connector>
+                            <isee:connector>.12</isee:connector>
+                            <isee:entity>death_rate</isee:entity>
+                            <isee:entity>normal_death_rate</isee:entity>
+                            <isee:connector>.28</isee:connector>
+                            <isee:connector>.27</isee:connector>
+                            <isee:entity>catch_per_ship_normal</isee:entity>
+                            <isee:entity>maintenance_cost</isee:entity>
+                            <isee:connector>.19</isee:connector>
+                            <isee:entity>price_per_ship</isee:entity>
+                            <isee:connector>.20</isee:connector>
+                            <isee:entity>expenses</isee:entity>
+                            <isee:entity>cost_of_new_ships</isee:entity>
+                            <isee:connector>.16</isee:connector>
+                            <isee:entity>price_per_fish</isee:entity>
+                            <isee:connector>.14</isee:connector>
+                            <isee:entity>Cash</isee:entity>
+                            <isee:entity>revenues</isee:entity>
+                            <isee:entity>fish_catch</isee:entity>
+                            <isee:entity>salvage_value_per_ship</isee:entity>
+                            <isee:connector>.32</isee:connector>
+                            <isee:entity>Assets</isee:entity>
+                            <isee:alias>.30</isee:alias>
+                            <isee:connector>.31</isee:connector>
+                            <isee:connector>.29</isee:connector>
+                        </isee:group>
+                    </isee:chapter>
+                </isee:story>
+            </button>
+        </interface>
+        <isee:stories />
+        <style color="blue" background="white" font-style="normal" font-weight="normal" text-decoration="none" text-align="center" vertical-text-align="center" text-background="white" font-color="blue" font-family="Arial" font-size="9pt" padding="2" border-color="black" border-width="thin" border-style="none">
+            <stock label_side="top" label_angle="0" size="medium" />
+            <flow label_side="bottom" label_angle="0" />
+            <module label_side="top" label_angle="0" size="medium" />
+            <aux label_side="bottom" label_angle="0" size="medium" />
+            <group color="red" font-color="red" />
+        </style>
+    </model>
+</xmile>

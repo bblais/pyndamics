@@ -3,7 +3,7 @@ from scipy.stats import distributions as D
 import numpy as np
 import pylab as py
 import matplotlib.pyplot as pl
-import triangle
+#import triangle
 import scipy.optimize as op
 
 greek=['alpha','beta','gamma','delta','chi','tau',

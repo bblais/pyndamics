@@ -9,6 +9,16 @@
 
 # In[1]:
 
+get_ipython().magic(u'pylab inline')
+
+
+# In[2]:
+
+from pylab import *
+
+
+# In[3]:
+
 from pyndamics import Simulation
 from pyndamics.emcee import *
 
@@ -187,7 +197,7 @@ plot(t,h,'bo')  # plot the data
 
 # ## Logistic Model with the Same Data
 
-# In[25]:
+# In[4]:
 
 t=array([7,14,21,28,35,42,49,56,63,70,77,84],float)
 h=array([17.93,36.36,67.76,98.10,131,169.5,205.5,228.3,247.1,250.5,253.8,254.5])
@@ -205,7 +215,7 @@ sim.run(0,90)
 
 # ### Fit the model parameters, $a$ and $K$, and the initial value of the variable, $h$
 
-# In[26]:
+# In[5]:
 
 model=MCMCModel(sim,
                 a=Uniform(.001,5),
@@ -216,38 +226,38 @@ model=MCMCModel(sim,
 
 # when it looks weird, run mcmc again which continues from where it left off
 
-# In[27]:
+# In[6]:
 
 model.run_mcmc(500)
 model.plot_chains()
 
 
-# In[28]:
+# In[7]:
 
 model.run_mcmc(500)
 model.plot_chains()
 
 
-# In[29]:
+# In[8]:
 
 model.set_initial_values('samples')  # reset using the 16-84 percentile values from the samples
 model.run_mcmc(500)
 model.plot_chains()
 
 
-# In[30]:
+# In[9]:
 
 sim.a
 
 
-# In[31]:
+# In[10]:
 
 model.best_estimates()
 
 
 # ### Plot the Results
 
-# In[32]:
+# In[11]:
 
 sim.run(0,90)
 model.plot_distributions()
@@ -255,7 +265,7 @@ model.plot_distributions()
 
 # ### Plot the joint distribution between parameters, $a$ and $K$
 
-# In[33]:
+# In[12]:
 
 model.triangle_plot()
 

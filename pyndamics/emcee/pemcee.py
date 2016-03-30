@@ -3,7 +3,7 @@ from scipy.stats import distributions as D
 import numpy as np
 import pylab as py
 import matplotlib.pyplot as pl
-#import triangle
+import corner
 import scipy.optimize as op
 
 greek=['alpha','beta','gamma','delta','chi','tau',
@@ -211,11 +211,16 @@ class MCMCModel(object):
                 self.initial_value_keys.append(key)
                 
                 name=key.split('initial_')[1]
-                _c=sim.get_component(name)
+                try:
+                    _c=sim.get_component(name)
+                except IndexError:
+                    raise ValueError,"%s is a bad initial variable becayse %s is not a variable in the dynamical model." % (key,name)
                 self.initial_components[key]=_c
 
             else:
                 self.sim_param_keys.append(key)
+                if not key in sim.original_params:
+                    raise ValueError,"%s is not a parameter in the dynamical model.  Parameters are %s" % (key,str(sim.original_params))
         
         
         self.nwalkers=100
@@ -484,7 +489,7 @@ class MCMCModel(object):
             labels.append(label)
             idx.append(self.index[key])
         
-        fig = triangle.corner(self.samples[:,idx], labels=labels)
+        fig = corner.corner(self.samples[:,idx], labels=labels)
         
     def plot_distributions(self,*args,**kwargs):
         if not args:
@@ -512,7 +517,11 @@ class MCMCModel(object):
             py.plot(x,y,'-')
 
             v=np.percentile(self.samples[:,i], [2.5, 50, 97.5],axis=0)
-            py.title(r'$\hat{%s}^{97.5}_{2.5}=%.3f^{+%.3f}_{-%.3f}$' % (label,v[1],(v[2]-v[1]),(v[1]-v[0])))
+
+            if v[1]<.005:
+                py.title(r'$\hat{%s}^{97.5}_{2.5}=%.3g^{+%.3g}_{-%.3g}$' % (label,v[1],(v[2]-v[1]),(v[1]-v[0])))
+            else:
+                py.title(r'$\hat{%s}^{97.5}_{2.5}=%.3f^{+%.3f}_{-%.3f}$' % (label,v[1],(v[2]-v[1]),(v[1]-v[0])))
             py.ylabel(r'$p(%s|{\rm data})$' % label)
 
                 

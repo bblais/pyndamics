@@ -3,8 +3,104 @@ from scipy.stats import distributions as D
 import numpy as np
 import pylab as py
 import matplotlib.pyplot as pl
-import corner
 import scipy.optimize as op
+
+def histogram(y,bins=50,plot=True):
+    N,bins=np.histogram(y,bins)
+    
+    dx=bins[1]-bins[0]
+    if dx==0.0:  #  all in 1 bin!
+        val=bins[0]
+        bins=np.linspace(val-np.abs(val),val+np.abs(val),50)
+        N,bins=np.histogram(y,bins)
+    
+    dx=bins[1]-bins[0]
+    x=bins[0:-1]+(bins[1]-bins[0])/2.0
+    
+    y=N*1.0/np.sum(N)/dx
+    
+    if plot:
+        py.plot(x,y,'o-')
+        yl=py.gca().get_ylim()
+        py.gca().set_ylim([0,yl[1]])
+        xl=py.gca().get_xlim()
+        if xl[0]<=0 and xl[0]>=0:    
+            py.plot([0,0],[0,yl[1]],'k--')
+
+    return x,y
+
+
+def corner(samples,labels):
+    N=len(labels)
+    from matplotlib.colors import LogNorm
+    
+    py.figure(figsize=(12,12))
+    
+    axes={}
+    for i,l1 in enumerate(labels):
+        for j,l2 in enumerate(labels):
+            if j>i:
+                continue
+                
+            ax = py.subplot2grid((N,N),(i, j))
+            axes[(i,j)]=ax
+            
+            idx_y=labels.index(l1)
+            idx_x=labels.index(l2)
+            x,y=samples[:,idx_x],samples[:,idx_y]
+            
+            if i==j:
+                # plot distributions
+                xx,yy=histogram(x,bins=200,plot=False)
+                py.plot(xx,yy,'-o',markersize=3)
+                py.gca().set_yticklabels([])
+                
+                if i==(N-1):
+                    py.xlabel(l2)
+                    [l.set_rotation(45) for l in ax.get_xticklabels()]
+                else:
+                    ax.set_xticklabels([])
+                
+            else:
+                counts,ybins,xbins,image = py.hist2d(x,y,bins=100,norm=LogNorm())
+                #py.contour(counts,extent=[xbins.min(),xbins.max(),ybins.min(),ybins.max()],linewidths=3)
+                
+                if i==(N-1):
+                    py.xlabel(l2)
+                    [l.set_rotation(45) for l in ax.get_xticklabels()]
+                else:
+                    ax.set_xticklabels([])
+                    
+                if j==0:
+                    py.ylabel(l1)
+                    [l.set_rotation(45) for l in ax.get_yticklabels()]
+                else:
+                    ax.set_yticklabels([])
+    
+    # make all the x- and y-lims the same
+    j=0
+    lims=[0]*N
+    for i in range(1,N):
+        ax=axes[(i,0)]
+        lims[i]=ax.get_ylim()
+
+        if i==N-1:
+            lims[0]=ax.get_xlim()
+    
+        
+    for i,l1 in enumerate(labels):
+        for j,l2 in enumerate(labels):
+            if j>i:
+                continue
+                
+            ax=axes[(i,j)]
+            
+            if j==i:
+                ax.set_xlim(lims[i])
+            else:
+                ax.set_ylim(lims[i])
+                ax.set_xlim(lims[j])
+
 
 greek=['alpha','beta','gamma','delta','chi','tau',
         'sigma','lambda','epsilon','zeta','xi','theta','rho','psi']
@@ -54,30 +150,6 @@ def time2str(tm):
     return s
     
     
-def histogram(y,bins=50,plot=True):
-    N,bins=np.histogram(y,bins)
-    
-    dx=bins[1]-bins[0]
-    if dx==0.0:  #  all in 1 bin!
-        val=bins[0]
-        bins=np.linspace(val-np.abs(val),val+np.abs(val),50)
-        N,bins=np.histogram(y,bins)
-    
-    dx=bins[1]-bins[0]
-    x=bins[0:-1]+(bins[1]-bins[0])/2.0
-    
-    y=N*1.0/np.sum(N)/dx
-    
-    if plot:
-        py.plot(x,y,'o-')
-        yl=py.gca().get_ylim()
-        py.gca().set_ylim([0,yl[1]])
-        xl=py.gca().get_xlim()
-        if xl[0]<=0 and xl[0]>=0:    
-            py.plot([0,0],[0,yl[1]],'k--')
-
-    return x,y
-
 
 
 from scipy.special import gammaln,gamma
@@ -489,7 +561,7 @@ class MCMCModel(object):
             labels.append(label)
             idx.append(self.index[key])
         
-        fig = corner.corner(self.samples[:,idx], labels=labels)
+        fig = corner(self.samples[:,idx], labels=labels)
         
     def plot_distributions(self,*args,**kwargs):
         if not args:

@@ -12,5 +12,4 @@ if not os.path.exists('setup.py'):
     raise ValueError
     
 os.system('pip install emcee')
-os.system('pip install triangle_plot')
 

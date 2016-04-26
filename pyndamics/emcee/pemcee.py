@@ -590,7 +590,7 @@ class MCMCModel(object):
 
             v=np.percentile(self.samples[:,i], [2.5, 50, 97.5],axis=0)
 
-            if v[1]<.005:
+            if v[1]<.005 or (v[2]-v[1])<0.005 or (v[1]-v[0])<0.005:
                 py.title(r'$\hat{%s}^{97.5}_{2.5}=%.3g^{+%.3g}_{-%.3g}$' % (label,v[1],(v[2]-v[1]),(v[1]-v[0])))
             else:
                 py.title(r'$\hat{%s}^{97.5}_{2.5}=%.3f^{+%.3f}_{-%.3f}$' % (label,v[1],(v[2]-v[1]),(v[1]-v[0])))
@@ -604,6 +604,33 @@ class MCMCModel(object):
         
         return x,y
         
+    def plot_many(self,t_min,t_max,params,N=500,alpha=0.05):
+        sim=self.sim
+        if isinstance(params,str):
+            params=[params]
+        
+        sim.noplots=True  # turn off the simulation plots
+        for i in range(N):
+            self.draw()
+            sim.run(t_min,t_max)
+            for num,p in enumerate(params):
+                t=sim.t
+                v=sim[p]
+                py.figure(num+1)
+                py.plot(t,v,'g-',alpha=alpha)
+        sim.noplots=False  # gotta love a double-negative
+        for num,p in enumerate(params):
+            py.figure(num+1)
+            c=sim.get_component(p)
+            py.ylabel(c.label)
+            py.xlabel('time')
+            if not c.data:
+                continue
+            t=c.data['t']
+            v=c.data['value']
+            py.plot(t,v,'bo')  
+
+
     def percentiles(self,p=[16, 50, 84]):
         result={}
         for i,key in enumerate(self.keys):

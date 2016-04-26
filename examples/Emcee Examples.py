@@ -85,7 +85,7 @@ model.plot_distributions()
 
 # ### Plot the data
 
-# In[12]:
+# In[4]:
 
 t=array([7,14,21,28,35,42,49,56,63,70,77,84],float)
 h=array([17.93,36.36,67.76,98.10,131,169.5,205.5,228.3,247.1,250.5,253.8,254.5])
@@ -99,7 +99,7 @@ ylabel('Height [cm]')
 # 
 # Here, the constant value ($a=1$) is hand-picked, and doesn't fit the data particularly well.
 
-# In[13]:
+# In[6]:
 
 sim=Simulation()
 sim.add("h'=a",1,plot=True)
@@ -146,7 +146,7 @@ model.plot_distributions()
 
 # ### Fit the model parameter, $a$, and the initial value of the variable, $h$
 
-# In[19]:
+# In[7]:
 
 model=MCMCModel(sim,
                 a=Uniform(-10,10),
@@ -154,7 +154,7 @@ model=MCMCModel(sim,
                 )
 
 
-# In[20]:
+# In[8]:
 
 model.run_mcmc(500)
 model.plot_chains()
@@ -162,7 +162,7 @@ model.plot_chains()
 
 # this looks like initial_h is irrelevant - or perhaps our uniform range is too small.
 
-# In[21]:
+# In[8]:
 
 model=MCMCModel(sim,
                 a=Uniform(-10,10),
@@ -170,13 +170,13 @@ model=MCMCModel(sim,
                 )
 
 
-# In[22]:
+# In[9]:
 
 model.run_mcmc(500)
 model.plot_chains()
 
 
-# In[23]:
+# In[10]:
 
 sim.run(0,90)
 model.plot_distributions()
@@ -184,15 +184,9 @@ model.plot_distributions()
 
 # ### Plot the simulations for many samplings of the simulation parameters
 
-# In[24]:
+# In[11]:
 
-sim.noplots=True  # turn off the simulation plots
-for i in range(500):
-    model.draw()
-    sim.run(0,90)
-    plot(sim.t,sim.h,'g-',alpha=.05)
-sim.noplots=False  # gotta love a double-negative
-plot(t,h,'bo')  # plot the data
+model.plot_many(0,90,'h')
 
 
 # ## Logistic Model with the Same Data
@@ -302,19 +296,19 @@ plot(t,h,'bo')  # plot the data
 # 
 # http://healthyalgorithms.com/2010/10/19/mcmc-in-python-how-to-stick-a-statistical-model-on-a-system-dynamics-model-in-pymc/
 
-# In[36]:
+# In[1]:
 
 from pyndamics import Simulation
 from pyndamics.emcee import *
 
 
-# In[37]:
+# In[2]:
 
 susceptible_data = np.array([999,997,996,994,993,992,990,989,986,984])
 infected_data = np.array([1,2,5,6,7,8,9,11,13,15])
 
 
-# In[38]:
+# In[3]:
 
 sim=Simulation()
 sim.add("N=S+I+R")
@@ -328,7 +322,7 @@ sim.add_data(t=t,I=infected_data,plot=True)
 sim.run(0,10)
 
 
-# In[39]:
+# In[4]:
 
 model=MCMCModel(sim,
                 beta=Uniform(0,1),
@@ -338,26 +332,36 @@ model=MCMCModel(sim,
                 )
 
 
-# In[40]:
+# In[5]:
 
 model.run_mcmc(500)
 model.plot_chains()
 
 
-# In[41]:
+# In[6]:
 
 model.set_initial_values('samples')  # reset using the 16-84 percentile values from the samples
 model.run_mcmc(500)
 model.plot_chains()
 
 
-# In[42]:
+# In[7]:
 
 sim.run(0,10)
 model.plot_distributions()
 
 
-# In[43]:
+# In[8]:
 
 model.triangle_plot()
+
+
+# In[9]:
+
+model.plot_many(0,10,('S','I','R'))
+
+
+# In[ ]:
+
+
 

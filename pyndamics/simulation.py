@@ -562,9 +562,9 @@ class Simulation(object):
         self.func_str=s
         exec(s)
 
-        _sim.func=_simfunc
+        _sim.func=locals()['_simfunc']
 
-        return _simfunc
+        return locals()['_simfunc']
          
         
     def inflow(self,cname,s):

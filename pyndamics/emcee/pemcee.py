@@ -503,6 +503,32 @@ class MCMCModel(object):
         self.median_values=np.percentile(self.samples,50,axis=0)
         theta=self.median_values
         
+        # calculate BIC
+        k=len(theta)
+        N=0
+        for name in self.data_components:
+            key='_sigma_%s' % name
+            _c=self.data_components[name]
+            sigma=theta[self.index[key]]
+            
+            t=_c.data['t']
+            y=_c.data['value']
+
+            N+=len(y)
+
+
+        # lower BIC = good
+        
+        self.BIC=k * np.log(N)-2.0*self.lnlike(theta)
+
+        # ΔBIC    Evidence against higher BIC
+        # 0 to 2  Not worth more than a bare mention
+        # 2 to 6  Positive
+        # 6 to 10 Strong
+        # >10 Very Strong
+
+
+
         self.assign_sim_values(theta)
         self.initial_value=theta
         self.last_pos=self.sampler.chain[:,-1,:]

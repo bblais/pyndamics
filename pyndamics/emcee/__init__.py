@@ -1,1 +1,1 @@
-from pemcee import *
+from .pemcee import *

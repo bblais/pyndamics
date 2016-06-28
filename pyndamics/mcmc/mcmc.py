@@ -101,7 +101,7 @@ class MCMCModel2(object):
             self.dbtype=ext[1:]
             
             if os.path.exists(self.dbname) and overwrite:
-                print "Overwriting %s" % self.dbname
+                print("Overwriting %s" % self.dbname)
                 os.remove(self.dbname)
                 
             self.MCMC=pymc.MCMC(self.MAP.variables,db=self.dbtype,dbname=self.dbname)
@@ -131,7 +131,7 @@ class MCMCModel2(object):
             
     def params_trace(self,N=None,*args):
         if len(args)==0:
-            args=[key for key in self.params.keys() if not key.startswith('initial_')]
+            args=[key for key in list(self.params.keys()) if not key.startswith('initial_')]
             
         key=args[0]
         L=len(self.model_dict[key].trace())
@@ -176,7 +176,7 @@ class MCMCModel2(object):
                 show_mcmc=True
                 
             if not show_normal and not show_mcmc:
-                raise ValueError,"Move on...nothing to see here."
+                raise ValueError("Move on...nothing to see here.")
 
             x,y=self.get_distribution(name,all_chains,plot=True)
             py.plot(x,y,*args,**kwargs)
@@ -216,7 +216,7 @@ class MCMCModel2(object):
                     separate_figures=True,figsize=(12,4),
                     show_normal=False,show_mcmc=True,show_95=False,all_chains=False):
         params=dict(self.params)
-        keys=params.keys()
+        keys=list(params.keys())
 
         if not separate_figures:
             py.figure(figsize=figsize)
@@ -282,8 +282,8 @@ class MCMCModel2(object):
         self.MAP.fit()
         
         t2=time.time()
-        print
-        print "Time taken:",time2str(t2-t1)
+        print()
+        print("Time taken:",time2str(t2-t1))
 
         self.set_mu()
 
@@ -295,7 +295,7 @@ class MCMCModel2(object):
         
         if all_chains:
             values=concatenate([db.trace(name,chain=c)[:] for c in range(db.chains)])
-            print "%s: %d values" % (name,len(values))
+            print("%s: %d values" % (name,len(values)))
         else:
             values=db.trace(name)[:]
 
@@ -306,7 +306,7 @@ class MCMCModel2(object):
         
         if all_chains:
             values=np.concatenate([db.trace(name,chain=c)[:] for c in range(db.chains)])
-            print "%s: %d values" % (name,len(values))
+            print("%s: %d values" % (name,len(values)))
         else:
             values=db.trace(name)[:]
             
@@ -348,7 +348,7 @@ class MCMCModel2(object):
         if all_chains:
             values1=np.concatenate([db.trace(var1,chain=c)[:] for c in range(db.chains)])
             values2=np.concatenate([db.trace(var2,chain=c)[:] for c in range(db.chains)])
-            print "%s: %d values" % (name,len(values1))
+            print("%s: %d values" % (name,len(values1)))
         else:
             values1=db.trace(var1)[:]
             values2=db.trace(var2)[:]
@@ -459,7 +459,7 @@ class MCMCModel2(object):
     
         run_sim = pymc.Deterministic( eval = runit, 
                         doc="this",name = 'run_sim',
-                        parents = dict(params.items()+initial_values.items()))
+                        parents = dict(list(params.items())+list(initial_values.items())))
     
         def make_fun(var):
             def fun(run_sim=run_sim,sim=sim):
@@ -502,7 +502,7 @@ class MCMCModel2(object):
 class MCMCModel3(object):
 
     def __init__(self,sim,params,database=None,overwrite=False):
-        raise ValueError,'database not implemented yet'
+        raise ValueError('database not implemented yet')
     
         self.sim=sim
         self.params=params
@@ -516,7 +516,7 @@ class MCMCModel3(object):
         if self.dbname is None:
             pass
         else:
-            raise ValueError,'database not implemented yet'
+            raise ValueError('database not implemented yet')
         
         self.MCMCparams={}
         
@@ -525,7 +525,7 @@ class MCMCModel3(object):
         
     def sample(self,**kwargs):
         if not self.dbname is None:
-            raise ValueError,'database not implemented yet'
+            raise ValueError('database not implemented yet')
 
         self.trace = pm.sample(3000, self.step, self.MAP,**kwargs)
         
@@ -538,10 +538,10 @@ class MCMCModel3(object):
 
             
     def params_trace(self,N=None,*args):
-        raise ValueError,'not implemented yet'
+        raise ValueError('not implemented yet')
         
         if len(args)==0:
-            args=[key for key in self.params.keys() if not key.startswith('initial_')]
+            args=[key for key in list(self.params.keys()) if not key.startswith('initial_')]
             
         key=args[0]
         L=len(self.model_dict[key].trace())
@@ -556,11 +556,11 @@ class MCMCModel3(object):
             yield d
         
     def draw(self):
-        raise ValueError,'not implemented yet'
+        raise ValueError('not implemented yet')
         self.sample(iter=1,progress_bar=False)
 
     def plot(self,name,*args,**kwargs):
-        raise ValueError,'not implemented yet'
+        raise ValueError('not implemented yet')
         if name in self.mu:
             try:
                 all_chains=kwargs.pop('all_chains')
@@ -588,7 +588,7 @@ class MCMCModel3(object):
                 show_mcmc=True
                 
             if not show_normal and not show_mcmc:
-                raise ValueError,"Move on...nothing to see here."
+                raise ValueError("Move on...nothing to see here.")
 
             x,y=self.get_distribution(name,all_chains,plot=True)
             py.plot(x,y,*args,**kwargs)
@@ -627,9 +627,9 @@ class MCMCModel3(object):
     def plot_distributions(self,number_format='%.4g',
                     separate_figures=True,figsize=(12,4),
                     show_normal=False,show_mcmc=True,show_95=False,all_chains=False):
-        raise ValueError,'not implemented yet'
+        raise ValueError('not implemented yet')
         params=dict(self.params)
-        keys=params.keys()
+        keys=list(params.keys())
 
         if not separate_figures:
             py.figure(figsize=figsize)
@@ -650,7 +650,7 @@ class MCMCModel3(object):
         
 
     def set_mu(self):
-        raise ValueError,'not implemented yet'
+        raise ValueError('not implemented yet')
         db=self.MCMC.db
     
         self.mu={}
@@ -680,7 +680,7 @@ class MCMCModel3(object):
         self.__dict__[key]=float(variable.value)
 
     def fit(self,**kwargs):
-        raise ValueError,'not implemented yet'
+        raise ValueError('not implemented yet')
         old_sim_noplots=self.sim.noplots
         self.sim.noplots=True
         t1=time.time()
@@ -697,8 +697,8 @@ class MCMCModel3(object):
         self.MAP.fit()
         
         t2=time.time()
-        print
-        print "Time taken:",time2str(t2-t1)
+        print()
+        print("Time taken:",time2str(t2-t1))
 
         self.set_mu()
 
@@ -706,24 +706,24 @@ class MCMCModel3(object):
         self.sim.noplots=old_sim_noplots
         
     def get_trace(self,name,all_chains=False):
-        raise ValueError,'not implemented yet'
+        raise ValueError('not implemented yet')
         db=self.MCMC.db
         
         if all_chains:
             values=concatenate([db.trace(name,chain=c)[:] for c in range(db.chains)])
-            print "%s: %d values" % (name,len(values))
+            print("%s: %d values" % (name,len(values)))
         else:
             values=db.trace(name)[:]
 
         return values
         
     def get_distribution(self,name,all_chains=False,plot=True):
-        raise ValueError,'not implemented yet'
+        raise ValueError('not implemented yet')
         db=self.MCMC.db
         
         if all_chains:
             values=np.concatenate([db.trace(name,chain=c)[:] for c in range(db.chains)])
-            print "%s: %d values" % (name,len(values))
+            print("%s: %d values" % (name,len(values)))
         else:
             values=db.trace(name)[:]
             
@@ -747,7 +747,7 @@ class MCMCModel3(object):
 
         
     def reset(self,params):
-        raise ValueError,'not implemented yet'
+        raise ValueError('not implemented yet')
         # this doesn't work
         self.sim=deepcopy(self.original_sim)
 
@@ -759,7 +759,7 @@ class MCMCModel3(object):
         return self.sim
            
     def plot_joint_distribution(self,var1,var2,show_prior=True,N=10000,fit_contour=False,all_chains=False):
-        raise ValueError,'not implemented yet'
+        raise ValueError('not implemented yet')
         import scipy.stats
         model=self        
         db=self.MCMC.db
@@ -767,7 +767,7 @@ class MCMCModel3(object):
         if all_chains:
             values1=np.concatenate([db.trace(var1,chain=c)[:] for c in range(db.chains)])
             values2=np.concatenate([db.trace(var2,chain=c)[:] for c in range(db.chains)])
-            print "%s: %d values" % (name,len(values1))
+            print("%s: %d values" % (name,len(values1)))
         else:
             values1=db.trace(var1)[:]
             values2=db.trace(var2)[:]
@@ -880,7 +880,7 @@ class MCMCModel3(object):
             
             run_sim = pymc.Deterministic( eval = runit, 
                             doc="this",name = 'run_sim',
-                            parents = dict(params.items()+initial_values.items()))
+                            parents = dict(list(params.items())+list(initial_values.items())))
     
             def make_fun(var):
                 def fun(run_sim=run_sim,sim=sim):
@@ -919,6 +919,6 @@ if pymc.__version__[0]=='2':
 elif pymc.__version__[0]=='3':
     MCMCModel=MCMCModel3
 else:
-    raise ValueError,"Bad Bad Bad"
+    raise ValueError("Bad Bad Bad")
     
     

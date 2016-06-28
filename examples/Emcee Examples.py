@@ -7,17 +7,17 @@
 # 
 # Page for this package: [https://code.google.com/p/pyndamics/](https://code.google.com/p/pyndamics/)
 
-# In[1]:
+# In[9]:
 
-get_ipython().magic(u'pylab inline')
+get_ipython().magic('pylab inline')
 
 
-# In[2]:
+# In[10]:
 
 from pylab import *
 
 
-# In[3]:
+# In[11]:
 
 from pyndamics import Simulation
 from pyndamics.emcee import *
@@ -25,7 +25,7 @@ from pyndamics.emcee import *
 
 # ## Artificial Example with Mice Population
 
-# In[4]:
+# In[12]:
 
 data_t=[0,1,2,3]
 data_mouse=[2,5,7,19]
@@ -41,40 +41,40 @@ sim.params(b=1.1,d=0.08)            # specify the parameters
 sim.run(5)
 
 
-# In[5]:
+# In[13]:
 
 model=MCMCModel(sim,b=Uniform(0,10))
 
 
-# In[6]:
+# In[14]:
 
 model.set_initial_values()
 model.plot_chains()
 
 
-# In[7]:
+# In[15]:
 
 model.run_mcmc(500)
 model.plot_chains()
 
 
-# In[8]:
+# In[16]:
 
 model.run_mcmc(500)
 model.plot_chains()
 
 
-# In[9]:
+# In[17]:
 
 model.best_estimates()
 
 
-# In[10]:
+# In[18]:
 
 sim.run(5)
 
 
-# In[11]:
+# In[19]:
 
 model.plot_distributions()
 
@@ -85,7 +85,7 @@ model.plot_distributions()
 
 # ### Plot the data
 
-# In[4]:
+# In[20]:
 
 t=array([7,14,21,28,35,42,49,56,63,70,77,84],float)
 h=array([17.93,36.36,67.76,98.10,131,169.5,205.5,228.3,247.1,250.5,253.8,254.5])
@@ -99,7 +99,7 @@ ylabel('Height [cm]')
 # 
 # Here, the constant value ($a=1$) is hand-picked, and doesn't fit the data particularly well.
 
-# In[6]:
+# In[21]:
 
 sim=Simulation()
 sim.add("h'=a",1,plot=True)
@@ -112,12 +112,12 @@ sim.run(0,90)
 # 
 # Specifying the prior probability distribution for $a$ as uniform between -10 and 10.
 
-# In[14]:
+# In[22]:
 
 model=MCMCModel(sim,a=Uniform(-10,10))
 
 
-# In[15]:
+# In[23]:
 
 model.run_mcmc(500)
 model.plot_chains()
@@ -125,28 +125,28 @@ model.plot_chains()
 
 # What is the best fit parameter value?
 
-# In[16]:
+# In[24]:
 
 model.best_estimates()
 
 
 # ### Rerun the model
 
-# In[17]:
+# In[25]:
 
 sim.run(0,90)
 
 
 # ### Plot the posterior histogram
 
-# In[18]:
+# In[26]:
 
 model.plot_distributions()
 
 
 # ### Fit the model parameter, $a$, and the initial value of the variable, $h$
 
-# In[7]:
+# In[27]:
 
 model=MCMCModel(sim,
                 a=Uniform(-10,10),
@@ -154,7 +154,7 @@ model=MCMCModel(sim,
                 )
 
 
-# In[8]:
+# In[28]:
 
 model.run_mcmc(500)
 model.plot_chains()
@@ -162,7 +162,7 @@ model.plot_chains()
 
 # this looks like initial_h is irrelevant - or perhaps our uniform range is too small.
 
-# In[8]:
+# In[29]:
 
 model=MCMCModel(sim,
                 a=Uniform(-10,10),
@@ -170,13 +170,13 @@ model=MCMCModel(sim,
                 )
 
 
-# In[9]:
+# In[30]:
 
 model.run_mcmc(500)
 model.plot_chains()
 
 
-# In[10]:
+# In[31]:
 
 sim.run(0,90)
 model.plot_distributions()
@@ -184,14 +184,14 @@ model.plot_distributions()
 
 # ### Plot the simulations for many samplings of the simulation parameters
 
-# In[11]:
+# In[32]:
 
 model.plot_many(0,90,'h')
 
 
 # ## Logistic Model with the Same Data
 
-# In[25]:
+# In[33]:
 
 t=array([7,14,21,28,35,42,49,56,63,70,77,84],float)
 h=array([17.93,36.36,67.76,98.10,131,169.5,205.5,228.3,247.1,250.5,253.8,254.5])
@@ -209,7 +209,7 @@ sim.run(0,90)
 
 # ### Fit the model parameters, $a$ and $K$, and the initial value of the variable, $h$
 
-# In[26]:
+# In[34]:
 
 model=MCMCModel(sim,
                 a=Uniform(.001,5),
@@ -220,38 +220,38 @@ model=MCMCModel(sim,
 
 # when it looks weird, run mcmc again which continues from where it left off
 
-# In[27]:
+# In[35]:
 
 model.run_mcmc(500)
 model.plot_chains()
 
 
-# In[28]:
+# In[36]:
 
 model.run_mcmc(500)
 model.plot_chains()
 
 
-# In[29]:
+# In[37]:
 
 model.set_initial_values('samples')  # reset using the 16-84 percentile values from the samples
 model.run_mcmc(500)
 model.plot_chains()
 
 
-# In[30]:
+# In[38]:
 
 sim.a
 
 
-# In[31]:
+# In[39]:
 
 model.best_estimates()
 
 
 # ### Plot the Results
 
-# In[32]:
+# In[40]:
 
 sim.run(0,90)
 model.plot_distributions()
@@ -259,14 +259,14 @@ model.plot_distributions()
 
 # ### Plot the joint distribution between parameters, $a$ and $K$
 
-# In[33]:
+# In[41]:
 
 model.triangle_plot()
 
 
 # ### Plot the many samples for predictions
 
-# In[34]:
+# In[42]:
 
 sim.noplots=True  # turn off the simulation plots
 saved_h=[]
@@ -280,7 +280,7 @@ plot(t,h,'bo')  # plot the data
 saved_h=array(saved_h)
 
 
-# In[35]:
+# In[43]:
 
 med=percentile(saved_h,50,axis=0)
 lower=percentile(saved_h,2.5,axis=0)
@@ -296,19 +296,19 @@ plot(t,h,'bo')  # plot the data
 # 
 # http://healthyalgorithms.com/2010/10/19/mcmc-in-python-how-to-stick-a-statistical-model-on-a-system-dynamics-model-in-pymc/
 
-# In[1]:
+# In[44]:
 
 from pyndamics import Simulation
 from pyndamics.emcee import *
 
 
-# In[2]:
+# In[45]:
 
 susceptible_data = np.array([999,997,996,994,993,992,990,989,986,984])
 infected_data = np.array([1,2,5,6,7,8,9,11,13,15])
 
 
-# In[3]:
+# In[46]:
 
 sim=Simulation()
 sim.add("N=S+I+R")
@@ -322,7 +322,7 @@ sim.add_data(t=t,I=infected_data,plot=True)
 sim.run(0,10)
 
 
-# In[4]:
+# In[47]:
 
 model=MCMCModel(sim,
                 beta=Uniform(0,1),
@@ -332,31 +332,31 @@ model=MCMCModel(sim,
                 )
 
 
-# In[5]:
+# In[48]:
 
 model.run_mcmc(500)
 model.plot_chains()
 
 
-# In[6]:
+# In[49]:
 
 model.set_initial_values('samples')  # reset using the 16-84 percentile values from the samples
 model.run_mcmc(500)
 model.plot_chains()
 
 
-# In[7]:
+# In[50]:
 
 sim.run(0,10)
 model.plot_distributions()
 
 
-# In[8]:
+# In[51]:
 
 model.triangle_plot()
 
 
-# In[9]:
+# In[52]:
 
 model.plot_many(0,10,('S','I','R'))
 

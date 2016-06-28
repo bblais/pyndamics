@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import emcee
 from scipy.stats import distributions as D
 import numpy as np
@@ -286,13 +288,13 @@ class MCMCModel(object):
                 try:
                     _c=sim.get_component(name)
                 except IndexError:
-                    raise ValueError,"%s is a bad initial variable becayse %s is not a variable in the dynamical model." % (key,name)
+                    raise ValueError("%s is a bad initial variable becayse %s is not a variable in the dynamical model." % (key,name))
                 self.initial_components[key]=_c
 
             else:
                 self.sim_param_keys.append(key)
                 if not key in sim.original_params:
-                    raise ValueError,"%s is not a parameter in the dynamical model.  Parameters are %s" % (key,str(sim.original_params))
+                    raise ValueError("%s is not a parameter in the dynamical model.  Parameters are %s" % (key,str(sim.original_params)))
         
         
         self.nwalkers=100
@@ -436,7 +438,7 @@ class MCMCModel(object):
 
             if self.verbose:
                 print("Done.")
-                print timeit()
+                print(timeit())
 
             # assign the median back into the simulation values
             self.burn()
@@ -464,7 +466,7 @@ class MCMCModel(object):
             self.last_pos=emcee.utils.sample_ball(self.initial_value, 0.05*self.initial_value+1e-4, size=self.nwalkers)
             
         else:
-            raise ValueError,"Unknown method: %s" % method
+            raise ValueError("Unknown method: %s" % method)
 
                     
     
@@ -495,7 +497,7 @@ class MCMCModel(object):
 
         if self.verbose:
             print("Done.")
-            print timeit()
+            print(timeit())
 
         
         # assign the median back into the simulation values

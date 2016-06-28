@@ -1,1 +1,1 @@
-from mcmc import *
+from .mcmc import *

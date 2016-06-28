@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-# <nbformat>3.0</nbformat>
 
-# <markdowncell>
+# coding: utf-8
 
 # # Using Pyndamics to Simulate Dynamical Systems
 # 
@@ -9,17 +7,16 @@
 # 
 # Page for this package: [https://code.google.com/p/pyndamics/](https://code.google.com/p/pyndamics/)
 
-# <codecell>
+# In[1]:
 
 from pyndamics import Simulation
 
-# <markdowncell>
 
 # ## Population of Mice - Exponential Growth
 # 
 # ### Specifying the Differential Equation
 
-# <codecell>
+# In[2]:
 
 sim=Simulation()   # get a simulation object
 
@@ -35,11 +32,10 @@ sim.run(0,4)
 # fig.savefig('mice.pdf')
 # fig.savefig('mice.png')
 
-# <markdowncell>
 
 # ### Specifying the Inflows/Outflows
 
-# <codecell>
+# In[3]:
 
 sim=Simulation()   # get a simulation object
 
@@ -51,22 +47,25 @@ sim.params(b=1.1,d=0.08)
 
 sim.run(0,4)
 
-# <markdowncell>
 
 # ### Plotting Manually
 
-# <codecell>
+# In[5]:
+
+from pylab import plot,xlabel,ylabel
+
+
+# In[6]:
 
 x,y=sim.t,sim.mice
 plot(x,y,'r--')
 xlabel('Days')
 ylabel('Number of Mice')
 
-# <markdowncell>
 
 # ## Predator-Prey Dynamics
 
-# <codecell>
+# In[8]:
 
 sim=Simulation()
 sim.figsize=(20,5)
@@ -81,7 +80,7 @@ sim.add("wolf' = -Wd*wolf+D*deer*wolf",
 
 sim.params(r=0.25,D=0.001,c=0.005,Wd=0.3,K=1e500)
 
-print sim.equations()
+print(sim.equations())
 sim.run(0,500)
 
 # fig=sim.figures[0]
@@ -92,7 +91,8 @@ sim.run(0,500)
 # fig.savefig('predprey_dynamics2.pdf')
 # fig.savefig('predprey_dynamics2.png')
 
-# <codecell>
+
+# In[9]:
 
 from pyndamics import phase_plot
 phase_plot(sim,'deer','wolf')
@@ -101,11 +101,10 @@ phase_plot(sim,'deer','wolf')
 # fig.savefig('predprey_phase.pdf')
 # fig.savefig('predprey_phase.png')
 
-# <markdowncell>
 
 # ## Exponential vs Logistic
 
-# <codecell>
+# In[10]:
 
 sim=Simulation()
 
@@ -124,54 +123,51 @@ sim.params(r=0.25,K=3000)
 
 sim.run(0,5)
 
-# <markdowncell>
 
 # ## Damped Spring - Second-order Differential Equations
 # 
 # When specifying the initial conditions for a 2nd-order equation, you need to specify the value of the variable (e.g. position) and its first derivative (e.g. velocity).  The simulator automatically changes the equations into a set of 1st-order equations.
 
-# <codecell>
+# In[12]:
 
 sim=Simulation()
 sim.add("x''=-k*x/m -b*x'",[10,0],plot=True)
 sim.params(k=1.0,m=1.0,b=0.5)
-print sim.equations()
+print(sim.equations())
 sim.run(0,20)
 
-# <markdowncell>
 
 # ## Vector Field Example
 
-# <codecell>
+# In[13]:
 
 sim=Simulation()
 sim.add("p'=p*(1-p)",0.1,plot=True)
 sim.run(0,10)
 
-# <markdowncell>
 
 # Arrows scaled by the magnitude...
 
-# <codecell>
+# In[15]:
 
 from pyndamics import vector_field
+from pylab import linspace
 vector_field(sim,p=linspace(-1,2,20))
 
-# <markdowncell>
 
 # Arrows rescaled to constant value...
 
-# <codecell>
+# In[16]:
 
 vector_field(sim,rescale=True,p=linspace(-1,2,20))
 
-# <markdowncell>
 
 # ## The Lorenz System
 # 
 # [http://en.wikipedia.org/wiki/Lorenz_system](http://en.wikipedia.org/wiki/Lorenz_system)
+# 
 
-# <codecell>
+# In[17]:
 
 sim=Simulation()
 sim.add("x'=sigma*(y-x)",14,plot=True)
@@ -180,25 +176,24 @@ sim.add("z'=x*y-beta*z",45,plot=True)
 sim.params(sigma=10,beta=8.0/3,rho=15)
 sim.run(0,50,num_iterations=10000)  # increase the resolution
 
-# <codecell>
+
+# In[18]:
 
 phase_plot(sim,'x','z')
 
-# <codecell>
+
+# In[19]:
 
 phase_plot(sim,'x','y','z')
 
-# <markdowncell>
 
 # ## Systems of Coupled Equations
 # 
 # Here I show a proof-of-concept specification of a coupled system.  It isn't optimized, but is ok for small problems.  The example comes from the SciPy Cookbook: http://wiki.scipy.org/Cookbook/CoupledSpringMassSystem
 
-# <markdowncell>
-
 # ### First, the manual way...
 
-# <codecell>
+# In[20]:
 
 sim=Simulation()
 sim.add("x1''=(-b1 * x1' - k1 * (x1 - L1) + k2 * (x2 - x1 - L2)) / m1",[0.5,0.0],plot=[1,2])
@@ -216,11 +211,10 @@ sim.params( m1 = 1.0, # masses
 
 sim.run(0,10) 
 
-# <markdowncell>
 
 # ### Now with a bit of a convenient notation...
 
-# <codecell>
+# In[22]:
 
 N=2
 sim=Simulation()
@@ -241,15 +235,14 @@ sim.system_params(N,
             L_N=0,
         )
 
-print "Here are the equations:"
-print sim.equations()
+print("Here are the equations:")
+print(sim.equations())
 sim.run(0,10) 
 
-# <markdowncell>
 
 # ### Now with $N=3$
 
-# <codecell>
+# In[23]:
 
 N=3
 sim=Simulation()
@@ -270,19 +263,19 @@ sim.system_params(N,
             L_N=0,
         )
 
-print "Here are the equations:"
-print sim.equations()
+print("Here are the equations:")
+print(sim.equations())
 sim.run(0,10) 
 
-# <markdowncell>
 
 # ## Bifurcation diagram
 
-# <codecell>
+# In[24]:
 
 from pyndamics import Simulation
 
-# <codecell>
+
+# In[25]:
 
 sim=Simulation()
 sim.add("x'=sigma*(y-x)",14,plot=True)
@@ -291,12 +284,19 @@ sim.add("z'=x*y-beta*z",45,plot=True)
 sim.params(sigma=10,beta=8.0/3,rho=50)
 sim.run(0,50,num_iterations=10000)  # increase the resolution
 
-# <codecell>
+
+# In[26]:
 
 rho=linspace(10,30,200)
 results=sim.repeat(0,50,rho=rho)
 
-# <codecell>
+
+# In[28]:
+
+from pylab import ones
+
+
+# In[29]:
 
 y=[]
 x=[]
@@ -309,15 +309,12 @@ plot(x,y,'b.')
 xlabel(r'$\rho$')
 ylabel('x')
 
-# <markdowncell>
 
 # ## Using an externally defined function
 
-# <markdowncell>
-
 # many of the standard numpy functions work (sin, cos, tan, tanh, etc...)
 
-# <codecell>
+# In[30]:
 
 sim=Simulation()   # get a simulation object
 
@@ -329,12 +326,12 @@ sim.params(a=2)
 
 sim.run(0,40)
 
-# <markdowncell>
 
 # or you can define your own...
 
-# <codecell>
+# In[32]:
 
+from numpy import tanh
 def foo(y):
     return tanh(y)
 
@@ -348,13 +345,12 @@ sim.params(a=2)
 sim.functions(foo)
 sim.run(0,40)
 
-# <markdowncell>
 
 # ## Alternate Integrators
 # 
 # By default, pyndamics uses odeint, but you can also specify a few different intergrators.  I have implemented euler, rk2, rk4, and rk45.
 
-# <codecell>
+# In[34]:
 
 from pyndamics import Simulation
 sim=Simulation(method='rk45')
@@ -369,6 +365,11 @@ sim.add("wolf' = -Wd*wolf+D*deer*wolf",
 
 sim.params(r=0.25,D=0.001,c=0.005,Wd=0.3,K=1e500)
 
-print sim.equations()
+print(sim.equations())
 sim.run(0,500)
+
+
+# In[ ]:
+
+
 

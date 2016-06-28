@@ -1,15 +1,12 @@
-# -*- coding: utf-8 -*-
-# <nbformat>3.0</nbformat>
 
-# <markdowncell>
+# coding: utf-8
 
 # ## ￼Simulating, Analyzing, and Animating Dynamical Systems by Bard Ermentrout
 
-# <codecell>
+# In[1]:
 
 from pyndamics import *
 
-# <markdowncell>
 
 # ## Section 2.1
 # 
@@ -26,8 +23,9 @@ from pyndamics import *
 #     #
 #     # we are done
 #     done
+# 
 
-# <codecell>
+# In[2]:
 
 sim=Simulation()
 sim.add("x'=a*x+b*y",1,plot=True)
@@ -35,12 +33,12 @@ sim.add("y'=c*x+d*y",0,plot=True)
 sim.params(a=0,b=1,c=-1,d=0)
 sim.run(0,20)
 
-# <codecell>
+
+# In[3]:
 
 phase_plot(sim,'x','y')
 axis('equal')
 
-# <markdowncell>
 
 # ## Section 2.7
 # 
@@ -51,7 +49,7 @@ axis('equal')
 #     @ xp=V,yp=w,xlo=-.25,xhi=l.25,ylo=-.5,yhi=l,total=100 @ maxstor=10000
 #     done
 
-# <codecell>
+# In[4]:
 
 sim=Simulation()
 sim.add("v'=I+v*(1-v)*(v-a) -w",0,plot=True)
@@ -59,12 +57,12 @@ sim.add("w'=eps*(v-gamma*w)",0,plot=True)
 sim.params(I=0.4,a=0.1,eps=0.1,gamma=0.25)
 sim.run(100)
 
-# <codecell>
+
+# In[5]:
 
 vector_field(sim,v=linspace(-.25,1.25,30),w=linspace(-.5,1,30))
 phase_plot(sim,'v','w')
 
-# <markdowncell>
 
 # ## Section 3.2.1
 # 
@@ -75,8 +73,9 @@ phase_plot(sim,'v','w')
 #     init x=.l,v=.l 
 #     done
 # 
+# 
 
-# <codecell>
+# In[6]:
 
 sim=Simulation()
 sim.add("x'=v",.1)
@@ -85,7 +84,6 @@ sim.params(a=1,f=.2,c=.3,omega=1)
 sim.run(200,num_iterations=20000)
 phase_plot(sim,'x','v')
 
-# <markdowncell>
 
 # ## Section 3.3.1 - User defined functions
 # 
@@ -96,8 +94,9 @@ phase_plot(sim,'x','v')
 #     par a=16,b=12,c=16,d=5,p=-l,q=-4
 #     @ xp-u,yp=v,xlo=-.125,ylo=-.125,xhi=l,yhi=l 
 #     done
+# 
 
-# <codecell>
+# In[7]:
 
 def f(u):
     return 1.0/(1+exp(u))
@@ -109,7 +108,6 @@ sim.functions(f)
 sim.params(a=16,b=12,c=16,d=5,p=-1,q=-4)
 sim.run(10)
 
-# <markdowncell>
 
 # ## Section 3.4 - Auxiliary variables
 # 
@@ -119,8 +117,9 @@ sim.run(10)
 #     par g=9.8,1=2,ra=l
 #     aux E=m*((l*v)~2/2+g*l*(1-cos(theta))) 
 #     done
+# 
 
-# <codecell>
+# In[8]:
 
 sim=Simulation()
 sim.add("theta'=v",10,plot=True)
@@ -129,7 +128,6 @@ sim.add("E=m*((L*v)**2/2+g*L*(1-cos(theta)))",plot=True)
 sim.params(g=9.8,L=2,m=1)
 sim.run(10)
 
-# <markdowncell>
 
 # ## Section 3.4.1 - Fixed Variables
 # 
@@ -139,8 +137,9 @@ sim.run(10)
 #     y'=y*(a-R)+x*(l+q*R)
 #     par a=l,q=l 
 #     done
+# 
 
-# <codecell>
+# In[9]:
 
 sim=Simulation()
 sim.add("R=x**2+y**2")
@@ -149,7 +148,6 @@ sim.add("y'=y*(a-R)+x*(1+q*R)",0,plot=True)
 sim.params(a=1,q=1 )
 sim.run(10)
 
-# <markdowncell>
 
 # ## Section 4.5
 # 
@@ -159,18 +157,27 @@ sim.run(10)
 #     @ xp=x,yp=y
 #     @ x l o = - 6 , x h i =6 , y l o = - 6 , y h i =6 , c l t = . 02 
 #     done
+# 
 
-# <codecell>
+# In[10]:
 
 sim=Simulation()
 sim.add("x'=x+y+x**2-y**2+0.1",0.1,plot=True)
 sim.add("y'=y-2*x*y+x**2/2+y**2",0,plot=True)
 sim.run(1.2)
 
-# <codecell>
+
+# In[11]:
 
 vector_field(sim,x=linspace(-6,6,30),y=linspace(-6,6,30))
 
-# <codecell>
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
 
 

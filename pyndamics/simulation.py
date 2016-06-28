@@ -1,5 +1,6 @@
-from __future__ import division
-from __future__ import with_statement
+from __future__ import print_function
+
+
 from scipy.integrate import odeint,ode
 from pylab import *
 from numpy import *
@@ -221,13 +222,13 @@ def simfunc(_vec,t,_sim):
     for _i,_c in enumerate(_sim.assignments):
         _s='%s' % _c.diffstr
         if _sim.verbose:
-            print _s
+            print(_s)
             
         try:
             _val=eval(_s,_l)
         except NameError:
             for _j in range(_i+1):
-                print _sim.assignments[_j].diffstr
+                print(_sim.assignments[_j].diffstr)
             
             _val=eval(_s,_l)
         _l[_c.name]=_val
@@ -241,7 +242,7 @@ def simfunc(_vec,t,_sim):
             _s='%s' % _c.diffstr
         
         if _sim.verbose:
-            print _s
+            print(_s)
             
         _val=eval(_s,_l)
         
@@ -318,7 +319,7 @@ def vector_field(sim,rescale=False,**kwargs):
             elif i==1: # set y
                 c.initial_value=y
             else:
-                raise ValueError,"Not Implemented for 3D+"
+                raise ValueError("Not Implemented for 3D+")
                 
             vec.append(c.initial_value)
         vec=array(vec)
@@ -572,7 +573,7 @@ class Simulation(object):
         c=[x for x in self.components if x.name==cname]
         
         if not c:
-            raise ValueError,'No component named "%s"' % cname
+            raise ValueError('No component named "%s"' % cname)
             
         c[0].inflow(s)
         
@@ -581,7 +582,7 @@ class Simulation(object):
         c=[x for x in self.components if x.name==cname]
 
         if not c:
-            raise ValueError,'No component named "%s"' % cname
+            raise ValueError('No component named "%s"' % cname)
 
         c[0].outflow(s)
 
@@ -683,7 +684,7 @@ class Simulation(object):
     def params(self,**kwargs):
         for name in kwargs:
             if name in [c.name for c in self.components]:
-                raise ValueError,"Parameter name %s already a variable." % name
+                raise ValueError("Parameter name %s already a variable." % name)
 
 
         self.myparams.update(kwargs)
@@ -698,10 +699,10 @@ class Simulation(object):
             
         #self.myparams.update(dict(zip([f.__name__ for f in args],args)))
         
-        self.myparams.update(dict(zip(
+        self.myparams.update(dict(list(zip(
             [f.__name__ for f in args],
             [array_wrap(a) for a in args],
-            )))        
+            ))))        
         
         if self.initialized:
             for key in [f.__name__ for f in args]:
@@ -735,7 +736,7 @@ class Simulation(object):
             for _c in _sim.assignments:
                 _s='%s' % _c.diffstr
                 if _sim.verbose:
-                    print _s
+                    print(_s)
                 
                 try:
                     _val=eval(_s)
@@ -765,7 +766,7 @@ class Simulation(object):
                 for _c in _sim.assignments:
                     _s='%s' % _c.diffstr
                     if _sim.verbose:
-                        print _s
+                        print(_s)
                     _val=eval(_s)                        
                     _l[_c.name]=_val
                     _c.values.append(_val)
@@ -781,7 +782,7 @@ class Simulation(object):
         c=self.get_component(name)
 
         if not c.data:
-            raise ValueError,'No Data for MSE'
+            raise ValueError('No Data for MSE')
 
         simvals=interp(c.data['t'],self.t,c.values)
         mseval=((array(c.data['value'])-simvals)**2).mean()
@@ -825,7 +826,7 @@ class Simulation(object):
         return mse        
 
     def repeat(self,t_min,t_max=None,num_iterations=1000,**kwargs):
-        keys=kwargs.keys()
+        keys=list(kwargs.keys())
         name=keys[0]
         L=len(kwargs[name])
         results=[]
@@ -946,7 +947,7 @@ class Simulation(object):
             discrete=True
             
             if all_diffeq:
-                raise ValueError,"Cannot have map and diffeq."
+                raise ValueError("Cannot have map and diffeq.")
                 
         
         if discrete:
@@ -1002,7 +1003,7 @@ class Simulation(object):
         elif self.method=='rk45':
             result=rk45(func,y0,t,self,**kwargs)
         else:
-            raise TypeError,"Unknown method: '%s'" % (self.method)
+            raise TypeError("Unknown method: '%s'" % (self.method))
         
 
         self.t=t
@@ -1089,7 +1090,7 @@ class Simulation(object):
         from matplotlib.widgets import Slider
     
         if not self.max_figure:
-            raise ValueError,"No figures to adjust"
+            raise ValueError("No figures to adjust")
             
         def update(val):
             vals={}
@@ -1186,7 +1187,7 @@ class Simulation(object):
         
         try:
             return self.components[y].values
-        except TypeError,IndexError:
+        except TypeError as IndexError:
             if y=='t':
                 return self.t
                 
@@ -1197,7 +1198,7 @@ class Simulation(object):
             if y in self.myparams:
                 return self.myparams[y]
             else:
-                raise IndexError,"Unknown Index %s" % str(y)
+                raise IndexError("Unknown Index %s" % str(y))
 
 def myfunc(t,p):
     if t<5:
@@ -1259,7 +1260,7 @@ def test_higher_order():
 
 
 def repeat(S_orig,t_min,t_max,**kwargs):
-    keys=kwargs.keys()
+    keys=list(kwargs.keys())
     if kwargs:
         num_times=len(kwargs[keys[0]])
     else:
@@ -1272,7 +1273,7 @@ def repeat(S_orig,t_min,t_max,**kwargs):
     
         # update the parameters
         updated_params={}
-        for k in kwargs.keys():
+        for k in list(kwargs.keys()):
             updated_params[k]=kwargs[k][i]
         params.update(updated_params)
  
@@ -1431,7 +1432,7 @@ def pso_fit_sim(varname,xd,yd,sim,parameters,
         while not stop:
             s.update()
             if iterations%progress_interval==0:
-                print "iterations", iterations," min fitness: ",s.best_val, " with vals ",s.best
+                print("iterations", iterations," min fitness: ",s.best_val, " with vals ",s.best)
                 
                 if plot:
                     pylab.clf()

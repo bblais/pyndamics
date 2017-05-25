@@ -3,7 +3,7 @@
 
 # In[5]:
 
-get_ipython().magic(u'pylab inline')
+get_ipython().magic('pylab inline')
 
 
 # In[6]:

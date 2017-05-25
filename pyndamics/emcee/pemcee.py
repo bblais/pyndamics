@@ -339,6 +339,14 @@ class MCMCModel(object):
             t=_c.data['t']
             y=_c.data['value']
             y_fit=self.sim.interpolate(t,name)
+
+            if any(np.isnan(y_fit)):
+                return -np.inf
+
+            if any(abs(y_fit)>1e100):
+                return -np.inf
+                
+
             value+=lognormalpdf(y,y_fit,sigma)
             
         return value

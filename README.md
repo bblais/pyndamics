@@ -4,7 +4,7 @@ See http://nbviewer.ipython.org/7321928 for many examples.
 
 A simple example is the (Lorenz System)[http://en.wikipedia.org/wiki/Lorenz_system]:
 
-http://upload.wikimedia.org/math/b/0/e/b0ea9119f6aaa31302164c4212cce72d.png
+![Lorenz System formulas](http://upload.wikimedia.org/math/b/0/e/b0ea9119f6aaa31302164c4212cce72d.png)
 
 implemented in pyndamics as
 

@@ -172,14 +172,21 @@ def logexponpdf(x,_lambda):
     # p(x)=l exp(l x)
     return _lambda*x + np.log(_lambda)
 
-def lognormalpdf(x,mn,sig):
+def lognormalpdf(x,mn,sig,all_positive=False):
     # 1/sqrt(2*pi*sigma^2)*exp(-x^2/2/sigma^2)
     try:
         N=len(x)
+        val=-0.5*np.log(2*np.pi*sig**2)*N - np.sum((x-mn)**2/sig**2/2.0)
+        if all_positive:
+            val[x<0]=inf
+        return val
     except TypeError:
         N=1
-        
-    return -0.5*np.log(2*np.pi*sig**2)*N - np.sum((x-mn)**2/sig**2/2.0)
+        val=-0.5*np.log(2*np.pi*sig**2)*N - np.sum((x-mn)**2/sig**2/2.0)
+        if all_positive and x<0:
+            val=-inf
+
+        return val
     
 def logbetapdf(theta, h, N):
     return lognchoosek(N,h)+np.log(theta)*h+np.log(1-theta)*(N-h)
@@ -188,16 +195,18 @@ def logbetapdf(theta, h, N):
 import scipy.optimize as op
 
 class Normal(object):
-    def __init__(self,mean=0,std=1):
+    def __init__(self,mean=0,std=1,all_positive=False):
         self.mean=mean
         self.std=std
         self.default=mean
+        self.all_positive=all_positive
         
     def rand(self,*args):
+
         return np.random.randn(*args)*self.std+self.mean
     
     def __call__(self,x):
-        return lognormalpdf(x,self.mean,self.std)
+        return lognormalpdf(x,self.mean,self.std,self.all_positive)
 
 class Exponential(object):
     def __init__(self,_lambda=1):
@@ -633,6 +642,7 @@ class MCMCModel(object):
             py.ylabel(r'$p(%s|{\rm data})$' % label)
 
                 
+    
     def get_distribution(self,key,bins=200):
             
         i=self.index[key]
@@ -673,6 +683,21 @@ class MCMCModel(object):
             result[key]=np.percentile(self.samples[:,i], p,axis=0)
             
         return result
+        
+    def get_samples(self,*args):
+        result=[]
+
+        if not args:
+            args=self.keys
+
+        for a in args:
+            i=self.keys.index(a)
+            result.append(self.samples[:,i])
+            
+        if len(result)==1:
+            return result[0]
+        else:
+            return result
         
     def best_estimates(self):
         self.median_values=np.percentile(self.samples,50,axis=0)

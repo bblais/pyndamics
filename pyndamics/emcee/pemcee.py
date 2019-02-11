@@ -6,6 +6,7 @@ import numpy as np
 import pylab as py
 import matplotlib.pyplot as pl
 import scipy.optimize as op
+from scipy.special import logsumexp
 
 def histogram(y,bins=50,plot=True):
     N,bins=np.histogram(y,bins)
@@ -208,6 +209,9 @@ class Normal(object):
     def __call__(self,x):
         return lognormalpdf(x,self.mean,self.std,self.all_positive)
 
+    def __str__(self):
+        return "Normal(%g,%g)" % (self.mean,self.std)
+
 class Exponential(object):
     def __init__(self,_lambda=1):
         self._lambda=_lambda
@@ -231,6 +235,10 @@ class Uniform(object):
     def __call__(self,x):
         return loguniformpdf(x,self.min,self.max)
 
+    def __str__(self):
+        return "Uniform(%g,%g)" % (self.min,self.max)
+
+
 class Jeffries(object):
     def __init__(self):
         self.default=1.0
@@ -240,6 +248,9 @@ class Jeffries(object):
         
     def __call__(self,x):
         return logjeffreyspdf(x)
+
+    def __str__(self):
+        return "Jefferies()"
 
 class Beta(object):
     def __init__(self,h=100,N=100):
@@ -253,6 +264,8 @@ class Beta(object):
     def __call__(self,x):
         return logbetapdf(x,self.h,self.N)
     
+    def __str__(self):
+        return "Beta(h=%g,N=%g)" % (self.h,self.N)
 
 def lnprior_function(model):
     def _lnprior(x):
@@ -262,10 +275,32 @@ def lnprior_function(model):
 
 class MCMCModel(object):
     
+    def __str__(self):
+        s="Simulation:\n"
+        s+="\t"+'\n\t'.join(self.sim.equations().split('\n'))
+        s+="\nStats Model:\n"
+        for key in self.params:
+            s+="\t %s = %s" % (key,str(self.params[key]))+"\n"
+        return s
+
+
     def __init__(self,sim,**kwargs):
         self.sim=sim
         self.params=kwargs
         
+        self._init_params_()
+       
+        self.nwalkers=100
+        self.burn_percentage=0.25
+        self.initial_value=None
+        self.last_pos=None
+
+        self.verbose=True
+
+    def _init_params_(self):
+        sim=self.sim
+        params=self.params
+
         self.keys=[]
         for key in self.params:
             self.keys.append(key)
@@ -274,9 +309,10 @@ class MCMCModel(object):
         for c in self.sim.components+self.sim.assignments:
             if c.data:
                 key='_sigma_%s' % c.name
-                self.params[key]=Jeffries()
-                self.keys.append(key)
-                self.data_components[c.name]=c
+                if not key in self.params:
+                    self.params[key]=Jeffries()
+                    self.keys.append(key)
+                    self.data_components[c.name]=c
         
         self.index={}
         for i,key in enumerate(self.keys):
@@ -304,14 +340,7 @@ class MCMCModel(object):
                 self.sim_param_keys.append(key)
                 if not key in sim.original_params:
                     raise ValueError("%s is not a parameter in the dynamical model.  Parameters are %s" % (key,str(sim.original_params)))
-        
-        
-        self.nwalkers=100
-        self.burn_percentage=0.25
-        self.initial_value=None
-        self.last_pos=None
-
-        self.verbose=True
+ 
 
     # Define the probability function as likelihood * prior.
     def lnprior(self,theta):        
@@ -547,10 +576,41 @@ class MCMCModel(object):
         # >10 Very Strong
 
 
-
         self.assign_sim_values(theta)
         self.initial_value=theta
         self.last_pos=self.sampler.chain[:,-1,:]
+
+    def WAIC(self):
+        # WAIC
+        # from https://github.com/pymc-devs/pymc3/blob/02f0b7f9a487cf18e9a48b754b54c2a99cf9fba8/pymc3/stats.py
+        # We get three different measurements:
+        # waic: widely available information criterion
+        # waic_se: standard error of waic
+        # p_waic: effective number parameters
+
+        log_py=np.atleast_2d(array([self.lnprob(theta) 
+                                        for theta in self.samples])).T
+        lppd_i = logsumexp(log_py, axis=0, b=1.0 / len(log_py))
+        vars_lpd = np.var(log_py, axis=0)
+        warn_mg = 0
+        if np.any(vars_lpd > 0.4):
+            warnings.warn("""For one or more samples the posterior variance of the
+            log predictive densities exceeds 0.4. This could be indication of
+            WAIC starting to fail see http://arxiv.org/abs/1507.04544 for details
+            """)
+            warn_mg = 1
+
+        waic_i = - 2 * (lppd_i - vars_lpd)
+        waic = np.sum(waic_i)
+        waic_se = np.sqrt(len(waic_i) * np.var(waic_i))
+        p_waic = np.sum(vars_lpd)            
+
+        self.waic={'waic': waic,
+                   'waic_se':waic_se,
+                   'p_waic':p_waic,
+        }
+
+        return waic,waic_se,p_waic
 
     def plot_chains(self,*args,**kwargs):
         pl.clf()
@@ -712,3 +772,97 @@ class MCMCModel(object):
         self.assign_sim_values(theta)
         return theta
  
+
+
+class MCMCModelReg(MCMCModel):
+
+    def __init__(self,sim,verbose=True,**kwargs):
+        super().__init__(sim, **kwargs)
+        self.apply_regression(verbose)
+        self._init_params_()
+        
+    def apply_regression(self,verbose=True):
+        model=self
+        sim=self.sim
+
+        # make a common time variable
+        from operator import or_
+        from functools import reduce
+        t=np.array(sorted(reduce(or_, [set(c.data['t']) for c in sim.components if c.data])))    
+
+        from numpy import gradient,interp    
+        from statsmodels.formula.api import ols
+
+        data={'t':t}
+        for c in sim.components:
+            if not c.data:
+                continue
+
+            data[c.name]=interp(t,c.data['t'],c.data['value'])
+            data['d%s_dt' % c.name]=gradient(data[c.name],t)            
+
+        if verbose:
+            print(data)
+
+        model_results=[]
+        for c in sim.components:
+            if not c.data:
+                continue
+
+            eqn=c.diffstr
+
+            if '-' in eqn:
+                raise NotImplementedError("Equation: '%s'" % eqn)
+
+            parts=eqn.split('+')
+            param_names=[p.split('*')[0].strip() for p in parts]
+            rest=['*'.join(p.split('*')[1:]) for p in parts]
+
+            regeqn="d%s_dt ~ " % c.name
+            found_intercept=False
+            terms=[]
+            for r in rest:
+                if not r:  # intercept
+                    regeqn+=" +1 "
+                    terms.append('Intercept')
+                    found_intercept=True
+                else:
+                    term="I(%s)" % r.strip().replace(' ','')
+                    terms.append(term)
+                    regeqn+=" +%s " % term
+
+            if not found_intercept:
+                regeqn+=" -1 "
+
+            if verbose:
+                print("regeqn: ",regeqn)
+
+            model_E = ols(regeqn,data)
+            result_E = model_E.fit()
+
+            parse_info={'terms':terms,'param_names':param_names}
+            model_results.append((parse_info,model_E,result_E))
+            if verbose:
+                print(result_E.summary())
+
+            translation={}
+            for name in model_E.exog_names:
+                idx=terms.index(name.strip().replace(' ',''))
+                translation[name]=param_names[idx]
+            if verbose:
+                print(translation)
+
+
+            for t in translation:
+                p,b=result_E.params[t],result_E.bse[t]
+                mn=p
+                sd=b*0.5
+                model.params[translation[t]]=Normal(mn,sd)
+                sim.myparams[translation[t]]=mn
+                sim.original_params[translation[t]]=mn
+
+        if verbose:
+            print(model)
+
+        self.model_results=model_results
+

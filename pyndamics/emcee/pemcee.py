@@ -179,13 +179,13 @@ def lognormalpdf(x,mn,sig,all_positive=False):
         N=len(x)
         val=-0.5*np.log(2*np.pi*sig**2)*N - np.sum((x-mn)**2/sig**2/2.0)
         if all_positive:
-            val[x<0]=inf
+            val[x<0]=np.inf
         return val
     except TypeError:
         N=1
         val=-0.5*np.log(2*np.pi*sig**2)*N - np.sum((x-mn)**2/sig**2/2.0)
         if all_positive and x<0:
-            val=-inf
+            val=-np.inf
 
         return val
     

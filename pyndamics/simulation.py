@@ -1184,14 +1184,16 @@ class Simulation(object):
             raise AttributeError(item)
 
     def __getitem__(self,y):
+        import unicodedata
         
         try:
             return self.components[y].values
-        except TypeError as IndexError:
+        except (TypeError,IndexError):
             if y=='t':
                 return self.t
                 
-            found=[c for c in self.components+self.assignments if c.name==y]
+            found=[c for c in self.components+self.assignments if 
+                            c.name==y or unicodedata.normalize('NFKC', c.name)==y]
             if found:
                 return found[0].values
 

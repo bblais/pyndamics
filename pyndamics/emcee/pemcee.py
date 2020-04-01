@@ -250,7 +250,7 @@ class Jeffreys(object):
         return logjeffreyspdf(x)
 
     def __str__(self):
-        return "Jefferies()"
+        return "Jeffreys()"
 
 class Beta(object):
     def __init__(self,h=100,N=100):
@@ -310,7 +310,7 @@ class MCMCModel(object):
             if c.data:
                 key='_sigma_%s' % c.name
                 if not key in self.params:
-                    self.params[key]=Jeffries()
+                    self.params[key]=Jeffreys()
                     self.keys.append(key)
                     self.data_components[c.name]=c
         

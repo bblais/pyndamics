@@ -239,7 +239,7 @@ class Uniform(object):
         return "Uniform(%g,%g)" % (self.min,self.max)
 
 
-class Jeffries(object):
+class Jeffreys(object):
     def __init__(self):
         self.default=1.0
         
@@ -333,7 +333,7 @@ class MCMCModel(object):
                 try:
                     _c=sim.get_component(name)
                 except IndexError:
-                    raise ValueError("%s is a bad initial variable becayse %s is not a variable in the dynamical model." % (key,name))
+                    raise ValueError("%s is a bad initial variable because %s is not a variable in the dynamical model." % (key,name))
                 self.initial_components[key]=_c
 
             else:

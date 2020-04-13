@@ -793,31 +793,45 @@ class MCMCModel(object):
         fig = corner(self.samples[:,idx], labels=labels)
         
     def plot_distributions(self,*args,**kwargs):
-        if not args:
-            args=self.keys
+        if not args and not kwargs:
+            keys=list(self.keys)
+        else:
+            keys=list(args)
+
+        keys=keys+list(kwargs.keys())
         
-        for key in args:
-            if key.startswith('_sigma_'):
-                name=key.split('_sigma_')[1]
-                label=r'\sigma_{%s}' % name
+        for key in keys:
+
+            if type(key)==str:
+
+                if key.startswith('_sigma_'):
+                    name=key.split('_sigma_')[1]
+                    label=r'\sigma_{%s}' % name
+                else:
+                    namestr=key
+                    for g in greek:
+                        if key.startswith(g):
+                            namestr=r'\%s' % key
+
+                    label='%s' % namestr
+                if key in kwargs:
+                    values=kwargs[key]
+                else:
+                    i=self.index[key]
+                    values=self.samples[:,i]
             else:
-                namestr=key
-                for g in greek:
-                    if key.startswith(g):
-                        namestr=r'\%s' % key
+                values=key
+                label='value'
 
-                label='%s' % namestr
 
-            i=self.index[key]
-            
             py.figure(figsize=(12,4))
-            result=histogram(self.samples[:,i],bins=200)
+            result=histogram(values,bins=200)
             xlim=pl.gca().get_xlim()
             x=py.linspace(xlim[0],xlim[1],500)
-            y=D.norm.pdf(x,np.median(self.samples[:,i]),np.std(self.samples[:,i]))
+            y=D.norm.pdf(x,np.median(values),np.std(values))
             py.plot(x,y,'-')
 
-            v=np.percentile(self.samples[:,i], [2.5, 50, 97.5],axis=0)
+            v=np.percentile(values, [2.5, 50, 97.5],axis=0)
 
             if v[1]<.005 or (v[2]-v[1])<0.005 or (v[1]-v[0])<0.005:
                 py.title(r'$\hat{%s}^{97.5}_{2.5}=%.3g^{+%.3g}_{-%.3g}$' % (label,v[1],(v[2]-v[1]),(v[1]-v[0])))
@@ -825,7 +839,13 @@ class MCMCModel(object):
                 py.title(r'$\hat{%s}^{97.5}_{2.5}=%.3f^{+%.3f}_{-%.3f}$' % (label,v[1],(v[2]-v[1]),(v[1]-v[0])))
             py.ylabel(r'$p(%s|{\rm data})$' % label)
 
-                
+    def eval(self,S):
+        for i,key in enumerate(self.keys):
+            exec('%s=self.samples[:,i]' % key)
+        result=eval(S)
+        return result
+
+
     
     def get_distribution(self,key,bins=200):
             

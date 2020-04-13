@@ -7,6 +7,12 @@
 get_ipython().run_line_magic('pylab', 'inline')
 
 
+# ## Reproducing PyMC3 ODE_API_introduction
+# 
+# https://github.com/pymc-devs/pymc3/blob/master/docs/source/notebooks/ODE_API_introduction.ipynb
+# 
+# text for the equations taken from this original.  All simulations done with emcee and pyndamics.
+
 # In[2]:
 
 
@@ -124,13 +130,13 @@ model.plot_chains()
 model.plot_distributions()
 
 
-# In[20]:
+# In[10]:
 
 
 model.plot_many(0,10,'y')
 
 
-# In[21]:
+# In[11]:
 
 
 model=MCMCModel(sim,
@@ -139,20 +145,20 @@ model=MCMCModel(sim,
                )
 
 
-# In[22]:
+# In[12]:
 
 
 model.run_mcmc(300,repeat=2)
 model.plot_chains()
 
 
-# In[23]:
+# In[13]:
 
 
 model.plot_distributions()
 
 
-# In[24]:
+# In[14]:
 
 
 model.plot_many(0,10,'y')
@@ -177,7 +183,7 @@ model.plot_many(0,10,'y')
 #     data = az.from_pymc3(trace=trace, prior=prior, posterior_predictive=posterior_predictive)
 # ```
 
-# In[25]:
+# In[15]:
 
 
 model=MCMCModel(sim,
@@ -187,20 +193,20 @@ model=MCMCModel(sim,
                )
 
 
-# In[26]:
+# In[16]:
 
 
 model.run_mcmc(300,repeat=2)
 model.plot_chains()
 
 
-# In[27]:
+# In[17]:
 
 
 model.plot_distributions()
 
 
-# In[28]:
+# In[18]:
 
 
 model.plot_many(0,10,'y')
@@ -208,7 +214,7 @@ model.plot_many(0,10,'y')
 
 # ## SIR Model
 
-# In[29]:
+# In[19]:
 
 
 def SIR(y, t, p):
@@ -260,7 +266,7 @@ plt.show()
 #     data = az.from_pymc3(trace=trace, prior = prior, posterior_predictive = posterior_predictive)
 # ```
 
-# In[38]:
+# In[20]:
 
 
 sim=Simulation()
@@ -272,7 +278,7 @@ sim.add_data(t=times[1:],I=yobs[:,1],plot=1)
 sim.run(0,5)
 
 
-# In[35]:
+# In[21]:
 
 
 model=MCMCModel(sim,  # _sigma_S and _sigma_I default to Jeffreys
@@ -281,16 +287,35 @@ model=MCMCModel(sim,  # _sigma_S and _sigma_I default to Jeffreys
                )
 
 
-# In[36]:
+# In[22]:
 
 
-times.shape
+model.run_mcmc(300,repeat=2)
+model.plot_chains()
 
 
-# In[37]:
+# In[23]:
 
 
-times
+model.plot_distributions()
+
+
+# In[24]:
+
+
+model.plot_many(0,5,['S','I'])
+
+
+# In[25]:
+
+
+R0=model.eval('β/γ')
+
+
+# In[26]:
+
+
+model.plot_distributions(R0=R0)
 
 
 # In[ ]:

@@ -205,10 +205,14 @@ def lognormalpdf(x,mn,sig,all_positive=False):
         N=len(x)
         val=-0.5*np.log(2*np.pi*sig**2)*N - np.sum((x-mn)**2/sig**2/2.0)
         if all_positive:
-            val[x<0]=np.inf
+            val[x<0]=-np.inf
+        # print(x,mn,val)
+        # raise ValueError("here")
         return val
     except TypeError:
         N=1
+        # print(x,mn)
+        # raise ValueError("there")
         val=-0.5*np.log(2*np.pi*sig**2)*N - np.sum((x-mn)**2/sig**2/2.0)
         if all_positive and x<0:
             val=-np.inf
@@ -320,7 +324,7 @@ def loglognormalpdf(x,mn,sig):
     except TypeError:
         N=1
 
-    return -0.5*np.log(2*np.pi*sig**2)*N -log(x) - np.sum((log(x)-mn)**2/sig**2/2.0)
+    return -0.5*np.log(2*np.pi*sig**2)*N -np.log(x) - np.sum((np.log(x)-mn)**2/sig**2/2.0)
 
 class LogNormal(object):
     def __init__(self,mean=0,std=1):
@@ -416,7 +420,7 @@ class MCMCModel(object):
                 if not key in self.params:
                     self.params[key]=Jeffreys()
                     self.keys.append(key)
-                    self.data_components[c.name]=c
+                self.data_components[c.name]=c
         
         self.index={}
         for i,key in enumerate(self.keys):
@@ -478,8 +482,8 @@ class MCMCModel(object):
             _c=self.data_components[name]
             sigma=theta[self.index[key]]
             
-            t=_c.data['t']
-            y=_c.data['value']
+            t=_c.data['t'].ravel()
+            y=_c.data['value'].ravel()
             y_fit=self.sim.interpolate(t,name)
 
             if any(np.isnan(y_fit)):
@@ -490,6 +494,11 @@ class MCMCModel(object):
                 
 
             value+=lognormalpdf(y,y_fit,sigma)
+            # print(sigma)
+            # print(y.__repr__())
+            # print(y_fit.__repr__())
+            # print(theta)
+            # raise ValueError
             
         return value
     
@@ -520,8 +529,8 @@ class MCMCModel(object):
             _c=self.data_components[name]
             sigma=theta[self.index[key]]
             
-            t=_c.data['t']
-            y=_c.data['value']
+            t=_c.data['t'].ravel()
+            y=_c.data['value'].ravel()
             y_fit=self.sim.interpolate(t,name)
             value+=lognormalpdf(y,y_fit,1.0)  # replace sigma with 1.0
             
@@ -629,32 +638,45 @@ class MCMCModel(object):
         self.samples = self.sampler.chain[:, burnin:, :].reshape((-1, ndim))
         
     
-    def run_mcmc(self,N,**kwargs):
+    def run_mcmc(self,N,repeat=1,**kwargs):
         
         ndim=len(self.params)
         
         if self.last_pos is None:
             self.set_initial_values()
         
-        self.sampler = emcee.EnsembleSampler(self.nwalkers, ndim, self,)
         self.real_initial_value=self.last_pos.copy()
         
-        if self.verbose:
-            timeit(reset=True)
-            print("Running MCMC...")
 
-        self.sampler.run_mcmc(self.last_pos, N,**kwargs)
+        for i in range(repeat):
+            self.sampler = emcee.EnsembleSampler(self.nwalkers, ndim, self,)
 
-        if self.verbose:
-            print("Done.")
-            print(timeit())
+            if self.verbose:
+                timeit(reset=True)
+                print("Running MCMC %d/%d..." % (i+1,repeat))
+
+            self.sampler.run_mcmc(self.last_pos, N,**kwargs)
+
+            if self.verbose:
+                print("Done.")
+                print(timeit())
 
         
-        # assign the median back into the simulation values
-        self.burn()
-        self.median_values=np.percentile(self.samples,50,axis=0)
-        theta=self.median_values
+            # assign the median back into the simulation values
+            self.burn()
+            self.median_values=np.percentile(self.samples,50,axis=0)
+            theta=self.median_values
+
         
+
+            self.assign_sim_values(theta)
+            self.initial_value=theta
+            self.last_pos=self.sampler.chain[:,-1,:]
+
+
+            if repeat>1:
+                self.set_initial_values('samples')  # reset using the 16-84 percentile values from the samples
+
         # calculate BIC
         k=len(theta)
         N=0
@@ -680,9 +702,7 @@ class MCMCModel(object):
         # >10 Very Strong
 
 
-        self.assign_sim_values(theta)
-        self.initial_value=theta
-        self.last_pos=self.sampler.chain[:,-1,:]
+
 
     def WAIC(self):
         # WAIC

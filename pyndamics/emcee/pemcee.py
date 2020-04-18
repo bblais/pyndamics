@@ -482,8 +482,8 @@ class MCMCModel(object):
             _c=self.data_components[name]
             sigma=theta[self.index[key]]
             
-            t=_c.data['t'].ravel()
-            y=_c.data['value'].ravel()
+            t=np.array(_c.data['t']).ravel()
+            y=np.array(_c.data['value']).ravel()
             y_fit=self.sim.interpolate(t,name)
 
             if any(np.isnan(y_fit)):

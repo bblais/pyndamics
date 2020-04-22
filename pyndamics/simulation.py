@@ -23,6 +23,19 @@ rc('figure',figsize=(12,8))
 import os
 import sys
 
+class InterpFunction(object):
+    
+    def __init__(self,x,y,name):
+        self.x=x
+        self.y=y
+        self.__name__=name
+        
+    def __call__(self,x):
+        from numpy import interp
+        y=interp(x,self.x,self.y)
+        return y
+
+
 class RedirectStdStreams(object):
     def __init__(self, stdout=None, stderr=None):
         self._stdout = stdout or sys.stdout
@@ -1112,6 +1125,16 @@ class Simulation(object):
             self.sliders[key].on_changed(update)
             show()
         
+    def add_interp_function(self,t=None,**kwargs):
+
+        assert len(kwargs)==1
+
+        name=list(kwargs.keys())[0]
+        value=kwargs[name]
+
+        self.functions(InterpFunction(t,value,name))
+
+
     def add_data(self,t,plot=False,**kwargs):
         for key in kwargs:
             c=self.get_component(key)
